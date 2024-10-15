@@ -20,7 +20,7 @@ Matrix4 Rotate(Matrix4 mat, float radians, Vector3 axis)
         Vector4(axis[2] * axis[0] * (1 - cos(radians)) + axis[1] * sin(radians), axis[2] * axis[1] * (1 - cos(radians)) - axis[0] * sin(radians), cos(radians) + powf(axis[2], 2.0) * (1 - cos(radians)), 0),
         Vector4(0, 0, 0 ,1)
     );
-    return rotateMat;
+    return rotateMat * mat;
 }
 
 Matrix4 Perspective(float fov, float aspectRatio, float near, float far)
@@ -39,21 +39,49 @@ Matrix4 Perspective(float fov, float aspectRatio, float near, float far)
     return matrix;
 }
 
+Matrix4 Orthographique(float left, float right, float bot, float top, float near, float far)
+{
+    Matrix4 matrix = Matrix4(
+        Vector4(2 / (right - left), 0, 0, -((right + left) / (right - left))),
+        Vector4(0, 2 / (top - bot), 0, -((top + bot) / (top - bot))),
+        Vector4(0, 0, -2 / (far - near), -((far + near) / (far - near))),
+        Vector4(0, 0, 0, 1)
+    );
+    return matrix;
+}
 
 int main() {
+    std::vector<GLfloat> tmpVertices2;
+    std::vector<GLuint> tmpIndices;
+
     Matrix4 mat2 = Matrix4(1.0);
     mat2[3] = Vector4(1, 0, 0, 1);
     Matrix4 mat = Rotate(mat2, 3 *M_PI / 4, Vector3(0, 1, 0));
     
     Matrix4 model = Matrix4(1.0);
-    model = Rotate(model, -M_PI / 3, Vector3(1, 1, 0));
-
-    std::cout << model << std::endl;
+    //model = Rotate(model, -M_PI / 3, Vector3(1, 1, 0));
 
     Matrix4 view = Matrix4(1);
     view = Translate(view, Vector3(0, 0, -5));
 
     Matrix4 projection = Perspective(60, 1920 / 1200, 0.1, 100);
+    //Matrix4 projection = Orthographique(-0, 0.9, -0.9, 0.9, 0.1, 100);
+
+    std::cout << projection << std::endl;
+
+    Parser("42.obj", &tmpVertices2, &tmpIndices);
+
+    GLfloat vertices2[tmpVertices2.size()];
+    GLuint indices[tmpIndices.size()];
+
+    for (size_t i = 0; i < tmpVertices2.size(); i++)
+    {
+        vertices2[i] = tmpVertices2[i];
+    }
+    for (size_t i = 0; i < tmpIndices.size(); i++)
+    {
+        indices[i] = tmpIndices[i];
+    }
 
     if (!glfwInit()) {
         cerr << "Failed to initialize GLFW" << endl;
@@ -66,7 +94,7 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow *window;
-    window = glfwCreateWindow(1920, 1200, "tuto 1", NULL, NULL);
+    window = glfwCreateWindow(1920, 1200, "window", NULL, NULL);
     if (!window) {
         cerr << "failed to create window" << endl;
         glfwTerminate();
@@ -82,7 +110,7 @@ int main() {
     }
 
     glEnable(GL_DEPTH_TEST);
-    static const GLfloat vertices[] = {
+    /*GLfloat vertices[] = {
         -1.0f, -1.0f, 0.0f, 0.4f, 0.5f, 0.0f,   0.0f, 0.0f,
         1.0f, -1.0f, 0.0f,  0.7f, 0.7f, 0.25f,  1.0f, 0.0f,
         0.0f, 1.0f, 0.0f,   0.9f, 0.9f, 0.3f,   0.5f, 1.0f,
@@ -90,46 +118,36 @@ int main() {
         -1.0f, -1.0f, 1.0f, 0.4f, 0.5f, 0.0f,   0.0f, 0.0f,
         1.0f, -1.0f, 1.0f,  0.7f, 0.7f, 0.25f,  1.0f, 0.0f,
         0.0f, 1.0f, 1.0f,   0.9f, 0.9f, 0.3f,   0.5f, 1.0f
-    };
-    /*static const GLfloat vertices2[] = {
-        -0.5f, 0.001f, 0.0f,
-        0.5f, 0.001f, 0.0f,
-        0.0f, -1.0f, 0.0f
+    };*/
+
+    /*GLfloat vertices2[] = {
+        -1.0f, -1.0f, 0.0f,
+        -1.0f, -1.0f, 1.0f,
+        1.0f, -1.0f, 1.0f,
+
+        1.0f, -1.0f, 0.0f,
+        1.0f, -1.0f, 1.0f,
+        -1.0f, -1.0f, 0.0f,
+
+        -1.0f, -1.0f, 0.0f,
+        -1.0f, -1.0f, 1.0f,
+        0.0f, 1.0f, 1.0f,
+
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f, 0.0f,
+
+        1.0f, -1.0f, 0.0f,
+        1.0f, -1.0f, 1.0f,
+        0.0f, 1.0f, 1.0f,
+
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 1.0f,
+        1.0f, -1.0f, 0.0f,
 
     };*/
-    static const GLfloat vertices2[] = {
-        -1.0f, -1.0f, 0.0f,
-        -1.0f, -1.0f, 1.0f,
-        1.0f, -1.0f, 1.0f,
 
-        1.0f, -1.0f, 0.0f,
-        1.0f, -1.0f, 1.0f,
-        -1.0f, -1.0f, 0.0f,
-
-        1.0f, -1.0f, 0.0f,
-        1.0f, -1.0f, 1.0f,
-        0.0f, 1.0f, 1.0f,
-
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 1.0f,
-        1.0f, -1.0f, 0.0f,
-
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 1.0f,
-        -1.0f, -1.0f, 0.0f,
-
-        -1.0f, -1.0f, 1.0f,
-        -1.0f, -1.0f, 0.0f,
-        0.0f, 1.0f, 1.0f
-    };
-    unsigned int indices[] = {
-        0, 1, 2,
-    };
-    unsigned int indices2[] = {
-        0, 1, 2
-    };
-
-    GLuint VAO;
+    /*GLuint VAO;
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
@@ -138,12 +156,12 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    GLuint EBO;
+    /*GLuint EBO;
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);*/
 
-    GLuint texture;
+    /*GLuint texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
 
@@ -199,19 +217,21 @@ int main() {
     );
     glEnableVertexAttribArray(2);
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);*/
 
     GLuint VAO2;
-	glGenVertexArrays(1, &VAO2);
-	glBindVertexArray(VAO2);
-
-    GLuint VBO2;
-    glGenBuffers(1, &VBO2);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices2, GL_STATIC_DRAW);
-
     GLuint EBO2;
+    GLuint VBO2;
+    glGenVertexArrays(1, &VAO2);
+    glGenBuffers(1, &VBO2);
     glGenBuffers(1, &EBO2);
+
+	glBindVertexArray(VAO2);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
+
+    
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
@@ -220,7 +240,7 @@ int main() {
             3,
             GL_FLOAT,
             GL_FALSE,
-            0,
+            3 * sizeof(float),
             (void*)0
     );
     glEnableVertexAttribArray(0);
@@ -233,6 +253,7 @@ int main() {
     Shader firstShader = Shader("VertexShader.shader", "FragmentShader.shader");
     //GLuint programID2 = LoadShaders( "VertexShader.shader", "FragmentShader2.shader" );
     Shader secondShader = Shader("VertexShader2.shader", "FragmentShader2.shader");
+    float time = 0;
 
     do{
         float timeValue = glfwGetTime();
@@ -240,9 +261,18 @@ int main() {
         glClearColor(0.0f, 0.45f, 0.3f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-        firstShader.use();
-        //glUseProgram(programID);
-        model = Rotate(model, (float)glfwGetTime() * -M_PI / 3, Vector3(1, 1, 0));
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        {
+            time = -0.01;
+            std::cout << time << std::endl;
+            model = Rotate(model, time * -M_PI / 3, Vector3(0, 1, 0));
+        } else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        {
+            time = 0.01;
+            std::cout << time << std::endl;
+            model = Rotate(model, time * -M_PI / 3, Vector3(0, 1, 0));
+        }
+        /*firstShader.use();
         firstShader.set_matrix4("model", model);
         firstShader.set_matrix4("view", view);
         firstShader.set_matrix4("projection", projection);
@@ -252,19 +282,19 @@ int main() {
         glBindTexture(GL_TEXTURE_2D, texture);
         glBindVertexArray(VAO);
         //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDrawArrays(GL_TRIANGLES, 0, 6);*/
 
         secondShader.use();
         //glUseProgram(programID2);
-        model = Rotate(model, (float)glfwGetTime() * -M_PI / 3, Vector3(1, 1, 0));
+        //model = Rotate(model, (float)glfwGetTime() * -M_PI / 3, Vector3(1, 1, 0));
         secondShader.set_matrix4("model", model);
         secondShader.set_matrix4("view", view);
         secondShader.set_matrix4("projection", projection);
         secondShader.set_float("offset", 0.0);
 
         glBindVertexArray(VAO2);
-        //glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
-        glDrawArrays(GL_TRIANGLES, 0, 19);
+        glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
+        //glDrawArrays(GL_TRIANGLES, 0, 120);
 
         // Swap buffers
         glfwSwapBuffers(window);
@@ -274,10 +304,11 @@ int main() {
     while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
     glfwWindowShouldClose(window) == 0 );
 
-    glDeleteBuffers(1, &VBO);
-	glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-	glDeleteVertexArrays(1, &VAO);
+    //glDeleteBuffers(1, &VBO);
+	//glDeleteVertexArrays(1, &VAO);
+    glDeleteVertexArrays(1, &VAO2);
+    glDeleteBuffers(1, &VBO2);
+    glDeleteBuffers(1, &EBO2);
 
     glfwTerminate();
 }
