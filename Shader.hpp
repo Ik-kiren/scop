@@ -22,8 +22,9 @@ public:
     ~Shader();
 
     void use();
-    void set_float(const std::string name, float nbr);
-    void set_matrix4(const std::string name, Matrix4 matrix);
+    void setFloat(const std::string name, float nbr);
+    void setMatrix4(const std::string name, Matrix4 matrix);
+    void setVector3(const std::string name, Vector3 vec);
 };
 
 #endif

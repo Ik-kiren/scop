@@ -60,14 +60,19 @@ void Shader::use()
     glUseProgram(programID);
 }
 
-void Shader::set_float(const std::string name, float nbr)
+void Shader::setFloat(const std::string name, float nbr)
 {
     glUniform1f(glGetUniformLocation(programID, name.c_str()), nbr);
 }
 
-void Shader::set_matrix4(const std::string name, Matrix4 matrix)
+void Shader::setMatrix4(const std::string name, Matrix4 matrix)
 {
     glUniformMatrix4fv(glGetUniformLocation(programID, name.c_str()), 1, GL_FALSE, matrix.get_array());
+}
+
+void Shader::setVector3(const std::string name, Vector3 vec)
+{
+    glUniform3f(glGetUniformLocation(programID, name.c_str()), vec.x, vec.y, vec.z);
 }
 
 void Shader::checkShaderCompile(GLuint shader, const std::string name)

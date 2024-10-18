@@ -74,7 +74,7 @@ void Parser(std::string fileName, std::vector<GLfloat> *vertices, std::vector<GL
         while (file.good())
         {
             file.getline(buffer, 500);
-            if(buffer[0] == 'v' )
+            if(buffer[0] == 'v' && buffer[1] == ' ')
             {
                 CheckLineVertice(buffer + 2);
                 GetVertice(buffer + 2, vertices);

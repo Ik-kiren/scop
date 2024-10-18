@@ -38,3 +38,53 @@ float &Vector3::operator[](int index)
         return y;
     return z;
 }
+
+Vector3 &Vector3::operator*(float rhs)
+{
+    x = x * rhs;
+    y = y * rhs;
+    z = z * rhs;
+    return *this;
+}
+
+float Vector3::operator*(Vector3 rhs)
+{
+    return x * rhs.x + y * rhs.y + z * rhs.z;
+}
+
+Vector3 &Vector3::operator/(float rhs)
+{
+    if (rhs == 0)
+        return *this;
+    x = x / rhs;
+    y = y / rhs;
+    z = z / rhs;
+    return *this;
+}
+
+Vector3 &Vector3::operator-(Vector3 rhs)
+{
+    x = x - rhs.x;
+    y = y - rhs.y;
+    z = z - rhs.z;
+    return *this;
+}
+
+Vector3 &Vector3::operator+(Vector3 rhs)
+{
+    x = x + rhs.x;
+    y = y + rhs.y;
+    z = z + rhs.z;
+    return *this;
+}
+
+std::ostream &operator<<(std::ostream &out, Vector3 &rhs)
+{
+    out << "<";
+    for (int i = 0; i < 3; i++)
+    {
+        out << rhs[i] << ", ";
+    }
+    out << ">" << std::endl;
+    return out;
+}

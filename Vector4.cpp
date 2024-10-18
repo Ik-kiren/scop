@@ -21,6 +21,14 @@ Vector4::Vector4(Vector3 vec)
     this->w = 1.0;
 }
 
+Vector4::Vector4(Vector3 vec, float nbr)
+{
+    this->x = vec.x;
+    this->y = vec.y;
+    this->z = vec.z;
+    this->w = nbr;
+}
+
 Vector4::~Vector4()
 {
 
@@ -49,4 +57,33 @@ float &Vector4::operator[](int index)
     if (index == 2)
         return z;
     return w;
+}
+
+Vector4 &Vector4::operator+(Vector4 rhs)
+{
+    x = x + rhs.x;
+    y = y + rhs.y;
+    z = z + rhs.z;
+    w = w + rhs.w;
+    return *this;
+}
+
+Vector4 &Vector4::operator*(float rhs)
+{
+    x = x * rhs;
+    y = y * rhs;
+    z = z * rhs;
+    w = w * rhs;
+    return *this;
+}
+
+std::ostream &operator<<(std::ostream &out, Vector4 &rhs)
+{
+    out << "<";
+    for (int i = 0; i < 4; i++)
+    {
+        out << rhs[i] << ", ";
+    }
+    out << ">" << std::endl;
+    return out;
 }

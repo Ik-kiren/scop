@@ -2,10 +2,13 @@
 
 // Ouput data
 out vec3 color;
+in vec3 vertexPos;
+
+uniform float timeValue;
 
 void main()
 {
 
 	// Output color = red 
-	color = vec3(0.7,0.7,0.7);
+	color = vertexPos * timeValue;
 }

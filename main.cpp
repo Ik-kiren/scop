@@ -5,71 +5,49 @@
 
 using namespace std;
 
-Matrix4 Translate(Matrix4 mat, Vector3 vec)
+Vector3 ControlCamera(GLFWwindow* window, float &lastX, float &lastY, float &yaw, float &pitch, float &xoffset, float &yoffset)
 {
-    Matrix4 translationMat = Matrix4(1.0);
-    translationMat[3] = Vector4(vec);
-    return translationMat * mat;
-}
+    double xpos, ypos;
 
-Matrix4 Rotate(Matrix4 mat, float radians, Vector3 axis)
-{
-    Matrix4 rotateMat = Matrix4(
-        Vector4(cos(radians) + powf(axis[0], 2.0) * (1 - cos(radians)), axis[0] * axis[1] * (1 - cos(radians)) + axis[2] * sin(radians), axis[0] * axis[2] * (1 - cos(radians)) - axis[1] * sin(radians), 0),
-        Vector4(axis[1] * axis[0] * (1 - cos(radians)) - axis[2] * sin(radians), cos(radians) + powf(axis[1], 2.0) * (1 - cos(radians)), axis[1] * axis[2] * (1 - cos(radians)) + axis[0] * sin(radians), 0),
-        Vector4(axis[2] * axis[0] * (1 - cos(radians)) + axis[1] * sin(radians), axis[2] * axis[1] * (1 - cos(radians)) - axis[0] * sin(radians), cos(radians) + powf(axis[2], 2.0) * (1 - cos(radians)), 0),
-        Vector4(0, 0, 0 ,1)
+    glfwGetCursorPos(window, &xpos, &ypos);
+    xoffset = xpos - lastX;
+    yoffset = lastY - ypos;
+    lastX = xpos;
+    lastY = ypos;
+
+    const float sensitivity = 1.0f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw += xoffset;
+    pitch += yoffset;
+
+    if (pitch > 89.0f)
+        pitch = 89.0f;
+    if (pitch < -89.0f)
+        pitch = -89.0f;
+    Vector3 direction = Vector3(
+        cos(yaw * (M_PI / 180) * cos(pitch * (M_PI / 180))),
+        sin(pitch * (M_PI / 180)),
+        sin(yaw * (M_PI / 180) * cos(pitch * (M_PI / 180)))
     );
-    return rotateMat * mat;
-}
 
-Matrix4 Perspective(float fov, float aspectRatio, float near, float far)
-{
-    const float DEG2RAD = acos(-1.0f) / 180;
-    float tangent = tan(fov / 2 * DEG2RAD);
-    float right = near * tangent;
-    float top = right / aspectRatio;
-
-    Matrix4 matrix = Matrix4(
-        Vector4(near / right, 0, 0, 0),
-        Vector4(0, near / top, 0, 0),
-        Vector4(0, 0, -(far + near) / (far - near), - 1),
-        Vector4(0, 0, -(2 * far * near) / (far - near), 0)
-    );
-    return matrix;
-}
-
-Matrix4 Orthographique(float left, float right, float bot, float top, float near, float far)
-{
-    Matrix4 matrix = Matrix4(
-        Vector4(2 / (right - left), 0, 0, -((right + left) / (right - left))),
-        Vector4(0, 2 / (top - bot), 0, -((top + bot) / (top - bot))),
-        Vector4(0, 0, -2 / (far - near), -((far + near) / (far - near))),
-        Vector4(0, 0, 0, 1)
-    );
-    return matrix;
+    return normalized(direction);
 }
 
 int main() {
     std::vector<GLfloat> tmpVertices2;
     std::vector<GLuint> tmpIndices;
 
-    Matrix4 mat2 = Matrix4(1.0);
-    mat2[3] = Vector4(1, 0, 0, 1);
-    Matrix4 mat = Rotate(mat2, 3 *M_PI / 4, Vector3(0, 1, 0));
-    
     Matrix4 model = Matrix4(1.0);
-    //model = Rotate(model, -M_PI / 3, Vector3(1, 1, 0));
 
     Matrix4 view = Matrix4(1);
-    view = Translate(view, Vector3(0, 0, -5));
+    view = Translate(view, Vector3(0, 0, -10));
 
     Matrix4 projection = Perspective(60, 1920 / 1200, 0.1, 100);
     //Matrix4 projection = Orthographique(-0, 0.9, -0.9, 0.9, 0.1, 100);
 
-    std::cout << projection << std::endl;
-
-    Parser("42.obj", &tmpVertices2, &tmpIndices);
+    Parser("teapot.obj", &tmpVertices2, &tmpIndices);
 
     GLfloat vertices2[tmpVertices2.size()];
     GLuint indices[tmpIndices.size()];
@@ -110,205 +88,51 @@ int main() {
     }
 
     glEnable(GL_DEPTH_TEST);
-    /*GLfloat vertices[] = {
-        -1.0f, -1.0f, 0.0f, 0.4f, 0.5f, 0.0f,   0.0f, 0.0f,
-        1.0f, -1.0f, 0.0f,  0.7f, 0.7f, 0.25f,  1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,   0.9f, 0.9f, 0.3f,   0.5f, 1.0f,
 
-        -1.0f, -1.0f, 1.0f, 0.4f, 0.5f, 0.0f,   0.0f, 0.0f,
-        1.0f, -1.0f, 1.0f,  0.7f, 0.7f, 0.25f,  1.0f, 0.0f,
-        0.0f, 1.0f, 1.0f,   0.9f, 0.9f, 0.3f,   0.5f, 1.0f
-    };*/
-
-    /*GLfloat vertices2[] = {
-        -1.0f, -1.0f, 0.0f,
-        -1.0f, -1.0f, 1.0f,
-        1.0f, -1.0f, 1.0f,
-
-        1.0f, -1.0f, 0.0f,
-        1.0f, -1.0f, 1.0f,
-        -1.0f, -1.0f, 0.0f,
-
-        -1.0f, -1.0f, 0.0f,
-        -1.0f, -1.0f, 1.0f,
-        0.0f, 1.0f, 1.0f,
-
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 1.0f,
-        -1.0f, -1.0f, 0.0f,
-
-        1.0f, -1.0f, 0.0f,
-        1.0f, -1.0f, 1.0f,
-        0.0f, 1.0f, 1.0f,
-
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 1.0f,
-        1.0f, -1.0f, 0.0f,
-
-    };*/
-
-    /*GLuint VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-    GLuint VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    /*GLuint EBO;
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);*/
-
-    /*GLuint texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    int height;
-    int width;
-    int nrChannel;
-    stbi_set_flip_vertically_on_load(true);
-
-
-    unsigned char *data = stbi_load("Triforce.png", &width, &height, &nrChannel, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-    
-
-    glVertexAttribPointer(
-            0,
-            3,
-            GL_FLOAT,
-            GL_FALSE,
-            8 * sizeof(float),
-            (void*)0
-    );
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(
-            1,
-            3,
-            GL_FLOAT,
-            GL_FALSE,
-            8 * sizeof(float),
-            (void*) (3 * sizeof(float))
-    );
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(
-            2,
-            2,
-            GL_FLOAT,
-            GL_FALSE,
-            8 * sizeof(float),
-            (void *) (6 * sizeof(float))
-    );
-    glEnableVertexAttribArray(2);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);*/
-
-    GLuint VAO2;
-    GLuint EBO2;
-    GLuint VBO2;
-    glGenVertexArrays(1, &VAO2);
-    glGenBuffers(1, &VBO2);
-    glGenBuffers(1, &EBO2);
-
-	glBindVertexArray(VAO2);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
-
-    
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(
-            0,
-            3,
-            GL_FLOAT,
-            GL_FALSE,
-            3 * sizeof(float),
-            (void*)0
-    );
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    Shader firstShader = Shader("VertexShader.shader", "FragmentShader.shader");
+    Shader secondShader = Shader("VertexShader2.shader", "FragmentShader2.shader");
+    Mesh mesh = Mesh(tmpVertices2, tmpIndices, secondShader, &view, &projection);
 
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    //GLuint programID = LoadShaders( "VertexShader.shader", "FragmentShader.shader" );
-    Shader firstShader = Shader("VertexShader.shader", "FragmentShader.shader");
-    //GLuint programID2 = LoadShaders( "VertexShader.shader", "FragmentShader2.shader" );
-    Shader secondShader = Shader("VertexShader2.shader", "FragmentShader2.shader");
     float time = 0;
-
+    float lastX = 910;
+    float lastY = 600;
+    Vector3 cameraPos = Vector3(0, 0, 5);
+    float yaw = -90, pitch = 0;
+    float xoffset = 0, yoffset = 0;
     do{
         float timeValue = glfwGetTime();
         float redColor = (sin(timeValue) / 2.0f) + 0.5f;
         glClearColor(0.0f, 0.45f, 0.3f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
+        //Vector3 cameraDirection = ControlCamera(window, lastX, lastY, yaw, pitch, xoffset, yoffset);
+        Vector3 cameraDirection = Vector3(0, 0, 1);
+
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        {
-            time = -0.01;
-            std::cout << time << std::endl;
-            model = Rotate(model, time * -M_PI / 3, Vector3(0, 1, 0));
-        } else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        {
-            time = 0.01;
-            std::cout << time << std::endl;
-            model = Rotate(model, time * -M_PI / 3, Vector3(0, 1, 0));
-        }
-        /*firstShader.use();
-        firstShader.set_matrix4("model", model);
-        firstShader.set_matrix4("view", view);
-        firstShader.set_matrix4("projection", projection);
-        firstShader.set_float("timeValue", redColor);
-        firstShader.set_float("offset", 0.0);
-
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glBindVertexArray(VAO);
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        glDrawArrays(GL_TRIANGLES, 0, 6);*/
-
-        secondShader.use();
-        //glUseProgram(programID2);
-        //model = Rotate(model, (float)glfwGetTime() * -M_PI / 3, Vector3(1, 1, 0));
-        secondShader.set_matrix4("model", model);
-        secondShader.set_matrix4("view", view);
-        secondShader.set_matrix4("projection", projection);
-        secondShader.set_float("offset", 0.0);
-
-        glBindVertexArray(VAO2);
-        glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
-        //glDrawArrays(GL_TRIANGLES, 0, 120);
-
+            view = Translate(view, Vector3(-0.1, 0, 0));
+        else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+            view = Translate(view, Vector3(0.1, 0, 0));
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+            cameraPos = cameraPos + cameraDirection;
+        else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+            cameraPos = cameraPos - cameraDirection;
+        //std::cout << (xpos - 1920.0 / 2.0) / 1920.0 << " / " << (ypos - 1200.0 / 2.0) / 1200.0 << std::endl;
+        //projection = Rotate(projection, 0.05 * -M_PI / 3, Vector3((ypos - 1920.0 / 2.0) / 1920.0, (xpos - 1200.0 / 2.0) / 1200.0, 0));
+        //*mesh.getModel() = Translate(*mesh.getModel(), Vector3(cos(glfwGetTime()) / 8, 0, 0));
+        Vector3 newFrontDirection = Vector3(cameraPos.x + cameraDirection.x, cameraPos.y + cameraDirection.y, cameraPos.z + cameraDirection.z);
+        view = lookAt(cameraPos, newFrontDirection, Vector3(0, 1, 0));
+        //std::cout << view << std::endl;
+        //view = Rotate(view, 0.1 * M_PI / 3, Vector3((ypos - 1920.0 / 2.0) / 1920.0, (xpos - 1200.0 / 2.0) / 1200.0, 0));
+        mesh.drawMesh();
         // Swap buffers
         glfwSwapBuffers(window);
         glfwPollEvents();
 
     } // Vérifie si on a appuyé sur la touche échap (ESC) ou si la fenêtre a été fermée
     while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
-    glfwWindowShouldClose(window) == 0 );
-
-    //glDeleteBuffers(1, &VBO);
-	//glDeleteVertexArrays(1, &VAO);
-    glDeleteVertexArrays(1, &VAO2);
-    glDeleteBuffers(1, &VBO2);
-    glDeleteBuffers(1, &EBO2);
+        glfwWindowShouldClose(window) == 0);
 
     glfwTerminate();
 }
