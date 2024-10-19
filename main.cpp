@@ -15,7 +15,7 @@ Vector3 ControlCamera(GLFWwindow* window, float &lastX, float &lastY, float &yaw
     lastX = xpos;
     lastY = ypos;
 
-    const float sensitivity = 1.0f;
+    const float sensitivity = 0.1f;
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
@@ -107,8 +107,8 @@ int main() {
         float redColor = (sin(timeValue) / 2.0f) + 0.5f;
         glClearColor(0.0f, 0.45f, 0.3f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        //Vector3 cameraDirection = ControlCamera(window, lastX, lastY, yaw, pitch, xoffset, yoffset);
-        Vector3 cameraDirection = Vector3(0, 0, 1);
+        Vector3 cameraDirection = ControlCamera(window, lastX, lastY, yaw, pitch, xoffset, yoffset);
+        //Vector3 cameraDirection = Vector3(0, 0, 1);
 
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
             view = Translate(view, Vector3(-0.1, 0, 0));
@@ -122,7 +122,9 @@ int main() {
         //projection = Rotate(projection, 0.05 * -M_PI / 3, Vector3((ypos - 1920.0 / 2.0) / 1920.0, (xpos - 1200.0 / 2.0) / 1200.0, 0));
         //*mesh.getModel() = Translate(*mesh.getModel(), Vector3(cos(glfwGetTime()) / 8, 0, 0));
         Vector3 newFrontDirection = Vector3(cameraPos.x + cameraDirection.x, cameraPos.y + cameraDirection.y, cameraPos.z + cameraDirection.z);
+
         view = lookAt(cameraPos, newFrontDirection, Vector3(0, 1, 0));
+        
         //std::cout << view << std::endl;
         //view = Rotate(view, 0.1 * M_PI / 3, Vector3((ypos - 1920.0 / 2.0) / 1920.0, (xpos - 1200.0 / 2.0) / 1200.0, 0));
         mesh.drawMesh();

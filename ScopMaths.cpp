@@ -39,20 +39,20 @@ Matrix4 Transposed(Matrix4 mat)
 
 Matrix4 lookAt(Vector3 position, Vector3 target, Vector3 upVector)
 {
-    Vector3 direction = normalized(position - target);
-    Vector3 right = normalized(cross(upVector, direction));
-    Vector3 up = cross(direction, right);
+    Vector3 direction = normalized(target - position);
+    Vector3 right = normalized(cross(direction, upVector));
+    Vector3 up = cross(right, direction);
 
     Matrix4 lookAtMatrix = Matrix4(
         Vector4(right, 0.0f),
         Vector4(up, 0.0f),
-        Vector4(direction, 0.0f),
+        Vector4(direction.x * -1, direction.y * -1, direction.z * -1, 0.0f),
         Vector4(0.0f, 0.0f, 0.0f, 1.0f)
     );
     
     lookAtMatrix[0][3] = position * right * -1;
     lookAtMatrix[1][3] = position * up * -1;
-    lookAtMatrix[2][3] = position * direction * -1;
+    lookAtMatrix[2][3] = position * direction;
     return Transposed(lookAtMatrix);
 }
 
