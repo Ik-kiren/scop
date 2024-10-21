@@ -1,5 +1,4 @@
-#ifndef SHADER_HPP
-#define SHADER_HPP
+#pragma once
 
 #include <GL/glew.h>
 #include <string>
@@ -26,5 +25,3 @@ public:
     void setMatrix4(const std::string name, Matrix4 matrix);
     void setVector3(const std::string name, Vector3 vec);
 };
-
-#endif

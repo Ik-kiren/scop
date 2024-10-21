@@ -71,8 +71,8 @@ Matrix4 Perspective(float fov, float aspectRatio, float near, float far)
 {
     const float DEG2RAD = acos(-1.0f) / 180;
     float tangent = tan(fov / 2 * DEG2RAD);
-    float right = near * tangent;
-    float top = right / aspectRatio;
+    float top = near * tangent;
+    float right = top * aspectRatio;
 
     Matrix4 matrix = Matrix4(
         Vector4(near / right, 0, 0, 0),

@@ -62,20 +62,28 @@ Vector3 &Vector3::operator/(float rhs)
     return *this;
 }
 
-Vector3 &Vector3::operator-(Vector3 rhs)
+Vector3 Vector3::operator-(Vector3 rhs)
 {
     x = x - rhs.x;
     y = y - rhs.y;
     z = z - rhs.z;
-    return *this;
+    return this;
 }
 
-Vector3 &Vector3::operator+(Vector3 rhs)
+Vector3 Vector3::operator+(Vector3 rhs)
 {
     x = x + rhs.x;
     y = y + rhs.y;
     z = z + rhs.z;
-    return *this;
+    return this;
+}
+
+Vector3 Vector3::operator=(Vector3 rhs)
+{
+    this->x = rhs.x;
+    this->y = rhs.y;
+    this->z = rhs.z;
+    return this;
 }
 
 std::ostream &operator<<(std::ostream &out, Vector3 &rhs)

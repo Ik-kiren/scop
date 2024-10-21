@@ -1,6 +1,7 @@
 
 #include "Scop.hpp"
 #include "stb_image.h"
+#include <glm/gtc/matrix_transform.hpp>
 #include <cmath>
 
 using namespace std;
@@ -15,7 +16,7 @@ Vector3 ControlCamera(GLFWwindow* window, float &lastX, float &lastY, float &yaw
     lastX = xpos;
     lastY = ypos;
 
-    const float sensitivity = 0.1f;
+    const float sensitivity = 0.001f;
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
@@ -44,10 +45,10 @@ int main() {
     Matrix4 view = Matrix4(1);
     view = Translate(view, Vector3(0, 0, -10));
 
-    Matrix4 projection = Perspective(60, 1920 / 1200, 0.1, 100);
+    Matrix4 projection = Perspective(60.0f, 1920 / 1200, 0.1f, 100.0f);
     //Matrix4 projection = Orthographique(-0, 0.9, -0.9, 0.9, 0.1, 100);
 
-    Parser("teapot.obj", &tmpVertices2, &tmpIndices);
+    Parser("42.obj", &tmpVertices2, &tmpIndices);
 
     GLfloat vertices2[tmpVertices2.size()];
     GLuint indices[tmpIndices.size()];
@@ -102,6 +103,7 @@ int main() {
     Vector3 cameraPos = Vector3(0, 0, 5);
     float yaw = -90, pitch = 0;
     float xoffset = 0, yoffset = 0;
+    float speed = 0.1f;
     do{
         float timeValue = glfwGetTime();
         float redColor = (sin(timeValue) / 2.0f) + 0.5f;
@@ -109,15 +111,15 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         Vector3 cameraDirection = ControlCamera(window, lastX, lastY, yaw, pitch, xoffset, yoffset);
         //Vector3 cameraDirection = Vector3(0, 0, 1);
-
+        
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            view = Translate(view, Vector3(-0.1, 0, 0));
+            cameraPos = cameraPos + normalized(cross(cameraDirection, Vector3(0, 1, 0))) * speed;
         else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            view = Translate(view, Vector3(0.1, 0, 0));
+            cameraPos = cameraPos - normalized(cross(cameraDirection, Vector3(0, 1, 0))) * speed;
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            cameraPos = cameraPos + cameraDirection;
+            cameraPos = cameraPos + cameraDirection * speed;
         else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            cameraPos = cameraPos - cameraDirection;
+            cameraPos = cameraPos - cameraDirection * speed;
         //std::cout << (xpos - 1920.0 / 2.0) / 1920.0 << " / " << (ypos - 1200.0 / 2.0) / 1200.0 << std::endl;
         //projection = Rotate(projection, 0.05 * -M_PI / 3, Vector3((ypos - 1920.0 / 2.0) / 1920.0, (xpos - 1200.0 / 2.0) / 1200.0, 0));
         //*mesh.getModel() = Translate(*mesh.getModel(), Vector3(cos(glfwGetTime()) / 8, 0, 0));
