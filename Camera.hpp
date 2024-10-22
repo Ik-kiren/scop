@@ -20,4 +20,12 @@ class Camera
  public:
     Camera(Vector3 cameraPos, Vector3 up);
     ~Camera();
+
+    Vector3 GetPosition();
+    Vector3 GetDirection();
+    Vector3 GetUp();
+    Matrix4 GetViewMatrix();
+
+    void RegisterMouseInput(float xoffset, float yoffset);
+    void RegisterKeyboardInput(GLFWwindow *window);
 };

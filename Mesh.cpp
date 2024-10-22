@@ -111,6 +111,11 @@ Vector3 Mesh::getOffset()
     return offsetVector;
 }
 
+void    Mesh::SetModel(Matrix4 newModel)
+{
+    this->model = newModel;
+}
+
 void    Mesh::bindVao()
 {
     glBindVertexArray(this->VAO);

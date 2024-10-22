@@ -26,6 +26,7 @@ public:
     Vector3 getOffset();
     GLuint  getVao();
     Matrix4 *getModel();
+    void    SetModel(Matrix4 newModel);
     void    bindVao();
     void    drawMesh();
 };

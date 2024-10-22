@@ -39,18 +39,16 @@ float &Vector3::operator[](int index)
     return z;
 }
 
-Vector3 &Vector3::operator*(float rhs)
+Vector3 Vector3::operator*(float rhs)
 {
-    x = x * rhs;
-    y = y * rhs;
-    z = z * rhs;
-    return *this;
+    return Vector3(x * rhs, y * rhs, z * rhs);
 }
 
-float Vector3::operator*(Vector3 rhs)
+Vector3 Vector3::operator*(Vector3 rhs)
 {
-    return x * rhs.x + y * rhs.y + z * rhs.z;
+    return Vector3(x * rhs.x, y * rhs.y, z * rhs.z);
 }
+
 
 Vector3 &Vector3::operator/(float rhs)
 {
@@ -64,26 +62,20 @@ Vector3 &Vector3::operator/(float rhs)
 
 Vector3 Vector3::operator-(Vector3 rhs)
 {
-    x = x - rhs.x;
-    y = y - rhs.y;
-    z = z - rhs.z;
-    return this;
+    return Vector3(x - rhs.x, y - rhs.y, z - rhs.z);
 }
 
 Vector3 Vector3::operator+(Vector3 rhs)
 {
-    x = x + rhs.x;
-    y = y + rhs.y;
-    z = z + rhs.z;
-    return this;
+    return Vector3(x + rhs.x, y + rhs.y, z + rhs.z);
 }
 
-Vector3 Vector3::operator=(Vector3 rhs)
+Vector3 &Vector3::operator=(Vector3 const &rhs)
 {
     this->x = rhs.x;
     this->y = rhs.y;
     this->z = rhs.z;
-    return this;
+    return *this;
 }
 
 std::ostream &operator<<(std::ostream &out, Vector3 &rhs)

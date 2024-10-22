@@ -15,12 +15,12 @@ class Vector3
     ~Vector3();
 
     float   &operator[](int index);
-    Vector3 &operator*(float rhs);
-    float   operator*(Vector3 rhs);
+    Vector3 operator*(float rhs);
+    Vector3 operator*(Vector3 rhs);
     Vector3 &operator/(float rhs);
     Vector3 operator-(Vector3 rhs);
     Vector3 operator+(Vector3 rhs);
-    Vector3 operator=(Vector3 rhs);
+    Vector3 &operator=(Vector3 const &rhs);
 };
 
 std::ostream &operator<<(std::ostream &out, Vector3 &rhs);

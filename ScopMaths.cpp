@@ -9,6 +9,11 @@ Vector3 cross(Vector3 vec1, Vector3 vec2)
     ); 
 }
 
+float Dot(Vector3 vec1, Vector3 vec2)
+{
+    return vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z; 
+}
+
 float magnitude(Vector3 vec)
 {
     return sqrt(pow(vec.x, 2) + pow(vec.y, 2) + pow(vec.z, 2));
@@ -42,7 +47,6 @@ Matrix4 lookAt(Vector3 position, Vector3 target, Vector3 upVector)
     Vector3 direction = normalized(target - position);
     Vector3 right = normalized(cross(direction, upVector));
     Vector3 up = cross(right, direction);
-
     Matrix4 lookAtMatrix = Matrix4(
         Vector4(right, 0.0f),
         Vector4(up, 0.0f),
@@ -50,9 +54,9 @@ Matrix4 lookAt(Vector3 position, Vector3 target, Vector3 upVector)
         Vector4(0.0f, 0.0f, 0.0f, 1.0f)
     );
     
-    lookAtMatrix[0][3] = position * right * -1;
-    lookAtMatrix[1][3] = position * up * -1;
-    lookAtMatrix[2][3] = position * direction;
+    lookAtMatrix[0][3] = Dot(position, right) * -1;
+    lookAtMatrix[1][3] = Dot(position, up) * -1;
+    lookAtMatrix[2][3] = Dot(position, direction);
     return Transposed(lookAtMatrix);
 }
 

@@ -81,6 +81,15 @@ Vector4 Matrix4::operator*(Vector4 rhs)
    return vec;
 }
 
+Matrix4 &Matrix4::operator=(Matrix4 const &rhs)
+{
+   for (size_t i = 0; i < 4; i++)
+   {
+      this->matrix[i] = rhs.matrix[i];
+   }
+   return *this;
+}
+
 std::ostream &operator<<(std::ostream &out, Matrix4 &rhs)
 {
    for (int i = 0; i < 4; i++)

@@ -17,6 +17,7 @@
 #include "Vector3.hpp"
 #include "Vector4.hpp"
 #include "Matrix4.hpp"
+#include "Camera.hpp"
 #include "Mesh.hpp"
 
 void Parser(std::string fileName, std::vector<GLfloat> *vertices, std::vector<GLuint> *indices);

@@ -20,6 +20,8 @@ class Matrix4
     Vector4& operator[](int index);
     Matrix4 operator*(Matrix4 rhs);
     Vector4 operator*(Vector4 rhs);
+    Matrix4 &operator=(Matrix4 const &rhs);
+
     float *get_array();
 };
 
