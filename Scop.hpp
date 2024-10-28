@@ -1,5 +1,4 @@
-#ifndef SCOP_HPP
-#define SCOP_HPP
+#pragma once
 
 #include <iostream>
 #include <fstream>
@@ -13,6 +12,7 @@
 
 #include <GLFW/glfw3.h>
 
+#include "Object.hpp"
 #include "stb_image.h"
 #include "Shader.hpp"
 #include "Vector3.hpp"
@@ -20,6 +20,7 @@
 #include "Matrix4.hpp"
 #include "Camera.hpp"
 #include "Mesh.hpp"
+
 
 void Parser(std::string fileName, std::vector<GLfloat> *vertices, std::vector<GLuint> *indices);
 
@@ -33,5 +34,3 @@ Matrix4 lookAt(Vector3 position, Vector3 target, Vector3 upVector);
 Matrix4 Rotate(Matrix4 mat, float radians, Vector3 axis);
 Matrix4 Perspective(float fov, float aspectRatio, float near, float far);
 Matrix4 Orthographique(float left, float right, float bot, float top, float near, float far);
-
-#endif

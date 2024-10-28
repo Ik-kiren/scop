@@ -41,6 +41,71 @@ Mesh::Mesh(std::vector<GLfloat> vertices, std::vector<GLuint> indices, Shader me
     activeTexture = false;
 }
 
+Mesh::Mesh(Shader meshShader, Matrix4 *view, Matrix4 *projection, Object obj)
+    : vertices(obj.GetMeshVertexArray()), meshShader(meshShader), view(view), projection(projection)
+{
+    model = Matrix4(1.0f);
+    Vector3 newVec;
+    for (size_t i = 0; i < obj.GetVertices().size(); i++)
+    {
+        newVec[i % 3] = obj.GetVertices()[i];
+        if (i % 3 == 2)
+        {
+            this->vecVertices.push_back(newVec);
+        }
+    }
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+	glBindVertexArray(VAO);
+    
+    this->InitTexture();
+    
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(*vertices.data()) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+    int strideSize = 3;
+    if (obj.GetComponents() == 2)
+        strideSize = 6;
+    else if (obj.GetComponents() == 3)
+        strideSize = 8;
+    glVertexAttribPointer(
+        0,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        strideSize * sizeof(float),
+        (void*)0
+    );
+    glEnableVertexAttribArray(0);
+    if (obj.GetComponents() >= 2)
+    {
+        glVertexAttribPointer(
+            1,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            strideSize * sizeof(float),
+            (void*)(3 * sizeof(float))
+        );
+        glEnableVertexAttribArray(1);
+    }
+    else if (obj.GetComponents() == 3)
+    {
+        glVertexAttribPointer(
+            2,
+            2,
+            GL_FLOAT,
+            GL_FALSE,
+            strideSize * sizeof(float),
+            (void*)(6 * sizeof(float))
+        );
+        glEnableVertexAttribArray(2);
+    }
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    activeTexture = false;
+}
+
 Mesh::~Mesh()
 {
     glDeleteVertexArrays(1, &VAO);
@@ -151,7 +216,6 @@ void    Mesh::bindVao()
 void    Mesh::drawMesh()
 {
     meshShader.use();
-
     meshShader.setMatrix4("model", model);
     meshShader.setMatrix4("view", *view);
     meshShader.setMatrix4("projection", *projection);
@@ -160,7 +224,9 @@ void    Mesh::drawMesh()
 
     glBindTexture(GL_TEXTURE_2D, texture);
     glBindVertexArray(this->VAO);
-    glDrawElements(GL_TRIANGLES, sizeof(*indices.data()) * indices.size(), GL_UNSIGNED_INT, 0);
+    //glDrawElements(GL_TRIANGLES, sizeof(*indices.data()) * indices.size(), GL_UNSIGNED_INT, 0);
+    glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+    
 }
 
 Matrix4     *Mesh::getModel()

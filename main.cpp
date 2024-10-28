@@ -34,7 +34,16 @@ int main() {
     Matrix4 projection = Perspective(60.0f, 1920 / 1200, 0.1f, 100.0f);
     //Matrix4 projection = Orthographique(-0, 0.9, -0.9, 0.9, 0.1, 100);
 
-    Parser("teapot2.obj", &tmpVertices2, &tmpIndices);
+    Parser("42.obj", &tmpVertices2, &tmpIndices);
+
+    /*for (size_t i = 0; i < tmpIndices.size(); i++)
+    {
+        std::cout << tmpIndices[i] << std::endl;
+        std::cout << tmpVertices2[tmpIndices[i] * 3] << std::endl;
+        std::cout << tmpVertices2[tmpIndices[i] * 3 + 1] << std::endl;
+        std::cout << tmpVertices2[tmpIndices[i] * 3 + 2] << std::endl;
+    }*/
+    
 
     if (!glfwInit()) {
         cerr << "Failed to initialize GLFW" << endl;
@@ -54,6 +63,9 @@ int main() {
         return -1;
     }
 
+    Object test = Object("42.obj");
+    Object teapot = Object("teapot.obj");
+
     glfwMakeContextCurrent(window);
 
     glewExperimental =true;
@@ -66,7 +78,9 @@ int main() {
 
     Shader firstShader = Shader("VertexShader.shader", "FragmentShader.shader");
     Shader secondShader = Shader("VertexShader2.shader", "FragmentShader2.shader");
-    Mesh mesh = Mesh(tmpVertices2, tmpIndices, secondShader, &view, &projection);
+    //Mesh mesh = Mesh(tmpVertices2, tmpIndices, secondShader, &view, &projection);
+    Mesh mesh = Mesh(secondShader, &view, &projection, test);
+    Mesh mesh2 = Mesh(secondShader, &view, &projection, teapot);
 
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -77,6 +91,7 @@ int main() {
     float time = 0;
     float lastX = 910;
     float lastY = 600;
+    mesh.SetModel(Translate(*mesh.getModel(), Vector3(0, 3, 0)));
     Camera newCamera = Camera(Vector3(0, 0 ,5), Vector3(0, 1, 0));
     do{
         float timeValue = glfwGetTime();
@@ -85,9 +100,11 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         ControlCamera(window, lastX, lastY, &newCamera);
         mesh.SetModel(Rotate(*mesh.getModel(), M_PI / 64, Vector3(0, 1, 0)));
+        //mesh2.SetModel(Translate(*mesh2.getModel(), Vector3(2, 0, 0)));
         newCamera.RegisterKeyboardInput(window);
         view = newCamera.GetViewMatrix();
         mesh.drawMesh();
+        mesh2.drawMesh();
 
         // Swap buffers
         glfwSwapBuffers(window);

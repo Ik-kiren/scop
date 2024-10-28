@@ -1,6 +1,8 @@
 #pragma once
 #include "Scop.hpp"
 
+
+
 class Mesh
 {
  private:
@@ -18,6 +20,7 @@ class Mesh
     bool activeTexture;
  public:
     Mesh(std::vector<GLfloat> vertices, std::vector<GLuint> indices, Shader meshShader, Matrix4 *view, Matrix4 *projection);
+    Mesh(Shader meshShader, Matrix4 *view, Matrix4 *projection, Object obj);
     ~Mesh();
 
     void                    InitTexture();

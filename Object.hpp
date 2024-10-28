@@ -1,9 +1,14 @@
 #pragma once
-#include "Scop.hpp"
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <GL/glew.h>
+#include <stdio.h>
+#include <vector>
 
 class Object
 {
-private:
+ private:
     std::vector<GLfloat> vertices;
 
     std::vector<GLfloat> normalVertices;
@@ -16,13 +21,23 @@ private:
     std::vector<GLuint> textureIndices;
 
     std::vector<GLfloat> meshVertexArray;
-public:
+
+    // 0: vertex, 1 : normale, 2: texture
+    int components;
+ public:
     Object(std::string str);
     ~Object();
 
-    void CheckLineVertice(char *line);
-    void CheckLineFace(char *line);
-    void GetVertice(char *line);
-    void GetFace(char *line);
-    void Parser(std::string fileName);
+    void MeshCheckLineVertice(char *line);
+    void MeshCheckLineFace(char *line);
+
+    std::vector<GLfloat>    GetMeshVertexArray();
+    std::vector<GLfloat>    GetVertices();
+    int                     GetComponents();
+
+    void MeshGetVertice(char *line);
+    void MeshGetNormalVertice(char *line);
+    void MeshGetTextureVertice(char *line);
+    void MeshGetFace(char *line);
+    void MeshParser(std::string fileName);
 };
