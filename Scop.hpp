@@ -13,6 +13,7 @@
 
 #include <GLFW/glfw3.h>
 
+#include "stb_image.h"
 #include "Shader.hpp"
 #include "Vector3.hpp"
 #include "Vector4.hpp"

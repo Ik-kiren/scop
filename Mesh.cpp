@@ -19,6 +19,8 @@ Mesh::Mesh(std::vector<GLfloat> vertices, std::vector<GLuint> indices, Shader me
 
 	glBindVertexArray(VAO);
     
+    this->InitTexture();
+    
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(*vertices.data()) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
 
@@ -36,6 +38,7 @@ Mesh::Mesh(std::vector<GLfloat> vertices, std::vector<GLuint> indices, Shader me
     glEnableVertexAttribArray(0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    activeTexture = false;
 }
 
 Mesh::~Mesh()
@@ -43,6 +46,30 @@ Mesh::~Mesh()
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
+}
+
+void Mesh::InitTexture()
+{
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load("Triforce.jpg", &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
 }
 
 std::vector<GLfloat>	Mesh::getVertices()
@@ -131,6 +158,7 @@ void    Mesh::drawMesh()
     meshShader.setVector3("offset", getOffset());
     meshShader.setFloat("timeValue", sin(glfwGetTime()) / 0.3f);
 
+    glBindTexture(GL_TEXTURE_2D, texture);
     glBindVertexArray(this->VAO);
     glDrawElements(GL_TRIANGLES, sizeof(*indices.data()) * indices.size(), GL_UNSIGNED_INT, 0);
 }

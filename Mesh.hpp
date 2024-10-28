@@ -3,7 +3,7 @@
 
 class Mesh
 {
-private:
+ private:
     std::vector<GLfloat>	vertices;
     std::vector<GLuint>		indices;
 	std::vector<Vector3>	vecVertices;
@@ -11,22 +11,25 @@ private:
     Matrix4                 *projection;
     Matrix4                 *view;
     Shader					meshShader;
+    unsigned int            texture;
     GLuint VAO;
     GLuint VBO;
     GLuint EBO;
-public:
+    bool activeTexture;
+ public:
     Mesh(std::vector<GLfloat> vertices, std::vector<GLuint> indices, Shader meshShader, Matrix4 *view, Matrix4 *projection);
     ~Mesh();
 
+    void                    InitTexture();
 	std::vector<GLfloat>	getVertices();
 	std::vector<GLuint>		getIndices();
-	float	getOffsetZ();
-    float   getOffsetY();
-    float   getOffsetX();
-    Vector3 getOffset();
-    GLuint  getVao();
-    Matrix4 *getModel();
-    void    SetModel(Matrix4 newModel);
-    void    bindVao();
-    void    drawMesh();
+	float	                getOffsetZ();
+    float                   getOffsetY();
+    float                   getOffsetX();
+    Vector3                 getOffset();
+    GLuint                  getVao();
+    Matrix4                 *getModel();
+    void                    SetModel(Matrix4 newModel);
+    void                    bindVao();
+    void                    drawMesh();
 };

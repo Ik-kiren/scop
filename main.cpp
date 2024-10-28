@@ -1,6 +1,5 @@
 
 #include "Scop.hpp"
-#include "stb_image.h"
 #include <cmath>
 
 using namespace std;
@@ -35,7 +34,7 @@ int main() {
     Matrix4 projection = Perspective(60.0f, 1920 / 1200, 0.1f, 100.0f);
     //Matrix4 projection = Orthographique(-0, 0.9, -0.9, 0.9, 0.1, 100);
 
-    Parser("42.obj", &tmpVertices2, &tmpIndices);
+    Parser("teapot2.obj", &tmpVertices2, &tmpIndices);
 
     if (!glfwInit()) {
         cerr << "Failed to initialize GLFW" << endl;
@@ -71,6 +70,9 @@ int main() {
 
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load("Triforce.png", &width, &height, &nrChannels, 0);
+
 
     float time = 0;
     float lastX = 910;
