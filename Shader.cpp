@@ -75,6 +75,11 @@ void Shader::setVector3(const std::string name, Vector3 vec)
     glUniform3f(glGetUniformLocation(programID, name.c_str()), vec.x, vec.y, vec.z);
 }
 
+void Shader::setBool(const std::string name, bool state)
+{
+    glUniform1i(glGetUniformLocation(programID, name.c_str()), state);
+}
+
 void Shader::checkShaderCompile(GLuint shader, const std::string name)
 {
     int success;

@@ -6,7 +6,7 @@ Camera::Camera(Vector3 cameraPos, Vector3 up) : position(cameraPos), worldUp(up)
     yaw = -90.0f;
     pitch = 0.0f;
     speed = 0.1f;
-    sensitivity = 0.01f;
+    sensitivity = 0.0001f;
     setCameraVectors();
 }
 

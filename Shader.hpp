@@ -24,4 +24,5 @@ public:
     void setFloat(const std::string name, float nbr);
     void setMatrix4(const std::string name, Matrix4 matrix);
     void setVector3(const std::string name, Vector3 vec);
+    void setBool(const std::string name, bool state);
 };

@@ -45,6 +45,7 @@ Mesh::Mesh(Shader meshShader, Matrix4 *view, Matrix4 *projection, Object obj)
     : vertices(obj.GetMeshVertexArray()), meshShader(meshShader), view(view), projection(projection)
 {
     model = Matrix4(1.0f);
+    timer =0;
     Vector3 newVec;
     for (size_t i = 0; i < obj.GetVertices().size(); i++)
     {
@@ -103,7 +104,7 @@ Mesh::Mesh(Shader meshShader, Matrix4 *view, Matrix4 *projection, Object obj)
     }
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    activeTexture = false;
+    activeTexture = true;
 }
 
 Mesh::~Mesh()
@@ -213,14 +214,26 @@ void    Mesh::bindVao()
     glBindVertexArray(this->VAO);
 }
 
-void    Mesh::drawMesh()
+void    Mesh::drawMesh(GLFWwindow *window)
 {
+    timer += glfwGetTime() / 360;
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && timer > 1)
+    {
+        if (activeTexture)
+            activeTexture = false;
+        else
+            activeTexture = true;
+        timer = 0;
+        
+    }
     meshShader.use();
     meshShader.setMatrix4("model", model);
     meshShader.setMatrix4("view", *view);
     meshShader.setMatrix4("projection", *projection);
     meshShader.setVector3("offset", getOffset());
     meshShader.setFloat("timeValue", sin(glfwGetTime()) / 0.3f);
+    meshShader.setBool("activeTexture", activeTexture);
+
 
     glBindTexture(GL_TEXTURE_2D, texture);
     glBindVertexArray(this->VAO);

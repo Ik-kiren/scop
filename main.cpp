@@ -103,8 +103,8 @@ int main() {
         //mesh2.SetModel(Translate(*mesh2.getModel(), Vector3(2, 0, 0)));
         newCamera.RegisterKeyboardInput(window);
         view = newCamera.GetViewMatrix();
-        mesh.drawMesh();
-        mesh2.drawMesh();
+        mesh.drawMesh(window);
+        mesh2.drawMesh(window);
 
         // Swap buffers
         glfwSwapBuffers(window);

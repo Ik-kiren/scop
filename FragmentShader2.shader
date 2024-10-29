@@ -7,6 +7,7 @@ in vec3 vertexPos;
 
 uniform float timeValue;
 uniform sampler2D ourTexture;
+uniform bool activeTexture;
 
 void main()
 {
@@ -14,5 +15,6 @@ void main()
 	// Output color = red 
 	//color = vertexPos * timeValue;
 	vec2 textpos = vertexPos.xy;
-	fragText = texture(ourTexture, textpos);
+	if (activeTexture)
+		fragText = texture(ourTexture, textpos);
 }
