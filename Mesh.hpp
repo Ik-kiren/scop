@@ -1,7 +1,7 @@
 #pragma once
 #include "Scop.hpp"
 
-
+class Camera;
 
 class Mesh
 {
@@ -35,5 +35,5 @@ class Mesh
     Matrix4                 *getModel();
     void                    SetModel(Matrix4 newModel);
     void                    bindVao();
-    void                    drawMesh(GLFWwindow *window);
+    void                    drawMesh(GLFWwindow *window, Camera camera);
 };

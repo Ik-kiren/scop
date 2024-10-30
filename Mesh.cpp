@@ -214,7 +214,7 @@ void    Mesh::bindVao()
     glBindVertexArray(this->VAO);
 }
 
-void    Mesh::drawMesh(GLFWwindow *window)
+void    Mesh::drawMesh(GLFWwindow *window, Camera camera)
 {
     timer += glfwGetTime() / 360;
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && timer > 1)
@@ -226,11 +226,13 @@ void    Mesh::drawMesh(GLFWwindow *window)
         timer = 0;
         
     }
+    
     meshShader.use();
     meshShader.setMatrix4("model", model);
     meshShader.setMatrix4("view", *view);
     meshShader.setMatrix4("projection", *projection);
     meshShader.setVector3("offset", getOffset());
+    meshShader.setVector3("cameraPos", camera.GetPosition());
     meshShader.setFloat("timeValue", sin(glfwGetTime()) / 0.3f);
     meshShader.setBool("activeTexture", activeTexture);
 

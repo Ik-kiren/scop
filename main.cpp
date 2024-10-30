@@ -63,7 +63,7 @@ int main() {
         return -1;
     }
 
-    Object test = Object("42.obj");
+    Object test = Object("cubeoffset.obj");
     Object teapot = Object("teapot.obj");
 
     glfwMakeContextCurrent(window);
@@ -81,6 +81,7 @@ int main() {
     //Mesh mesh = Mesh(tmpVertices2, tmpIndices, secondShader, &view, &projection);
     Mesh mesh = Mesh(secondShader, &view, &projection, test);
     Mesh mesh2 = Mesh(secondShader, &view, &projection, teapot);
+    Mesh teapotmesh = Mesh(secondShader, &view, &projection, teapot);
 
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -103,8 +104,8 @@ int main() {
         //mesh2.SetModel(Translate(*mesh2.getModel(), Vector3(2, 0, 0)));
         newCamera.RegisterKeyboardInput(window);
         view = newCamera.GetViewMatrix();
-        mesh.drawMesh(window);
-        mesh2.drawMesh(window);
+        mesh.drawMesh(window, newCamera);
+        mesh2.drawMesh(window, newCamera);
 
         // Swap buffers
         glfwSwapBuffers(window);

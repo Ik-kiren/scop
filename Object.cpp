@@ -95,6 +95,7 @@ void Object::MeshGetFace(char *line)
     std::vector<std::string> dividedLine;
     std::vector<std::string> dividedFaces;
 
+
     while(std::getline(streamLine, buffer, ' '))
     {
         dividedLine.push_back(buffer);
@@ -122,18 +123,20 @@ void Object::MeshGetFace(char *line)
         {
             tmpFaces.push_back(buffer);
         }
+
         for (size_t j = 0; j < tmpFaces.size(); j++)
         {
             if (j == 2)
             {
-                meshVertexArray.push_back(textureVertices[(atoi(tmpFaces[j].c_str()) - 1) * 3]);
-                meshVertexArray.push_back(textureVertices[(atoi(tmpFaces[j].c_str()) - 1) * 3 + 1]);
+                
+                meshVertexArray.push_back(textureVertices[(atoi(tmpFaces[j - 1].c_str()) - 1) * 2]);
+                meshVertexArray.push_back(textureVertices[(atoi(tmpFaces[j - 1].c_str()) - 1) * 2 + 1]);
             }
             else if (j == 1)
             {
-                meshVertexArray.push_back(normalVertices[(atoi(tmpFaces[j].c_str()) - 1) * 3]);
-                meshVertexArray.push_back(normalVertices[(atoi(tmpFaces[j].c_str()) - 1) * 3 + 1]);
-                meshVertexArray.push_back(normalVertices[(atoi(tmpFaces[j].c_str()) - 1) * 3 + 2]);
+                meshVertexArray.push_back(normalVertices[(atoi(tmpFaces[j + 1].c_str()) - 1) * 3]);
+                meshVertexArray.push_back(normalVertices[(atoi(tmpFaces[j + 1].c_str()) - 1) * 3 + 1]);
+                meshVertexArray.push_back(normalVertices[(atoi(tmpFaces[j + 1].c_str()) - 1) * 3 + 2]);
             }
             else
             {
@@ -148,6 +151,8 @@ void Object::MeshGetFace(char *line)
     /*for (size_t i = 0; i < meshVertexArray.size(); i++)
     {
         std::cout << meshVertexArray[i] << std::endl;
+        if ((i + 1) % 8 == 0)
+            std::cout << std::endl;
     }*/
 }
 
@@ -185,6 +190,12 @@ void Object::MeshParser(std::string fileName)
                 MeshGetFace(buffer + 2);
             }
         }
+        /*for (size_t i = 0; i < meshVertexArray.size(); i++)
+        {
+            std::cout << meshVertexArray[i] << std::endl;
+            if ((i + 1) % 8 == 0)
+                std::cout << std::endl;
+        }*/
     }
     catch(std::ifstream::failure e)
     {

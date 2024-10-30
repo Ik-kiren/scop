@@ -2,8 +2,12 @@
 
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec3 normalVertex;
 
 out vec3 vertexPos;
+out vec3 normal;
+out vec3 fragpos;
+
 uniform vec3 offset;
 
 uniform mat4 model;
@@ -15,4 +19,6 @@ void main(){
     newVertex = newVertex - offset;
     gl_Position = projection * view * model * vec4(newVertex, 1.0);
     vertexPos = newVertex.xyz;
+    fragpos = vec3(model * vec4(newVertex, 1.0));
+    normal = mat3(transpose(inverse(model))) * normalVertex;
 }
