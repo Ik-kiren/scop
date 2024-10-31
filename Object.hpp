@@ -35,9 +35,9 @@ class Object
     std::vector<GLfloat>    GetVertices();
     int                     GetComponents();
 
-    void MeshGetVertice(char *line);
-    void MeshGetNormalVertice(char *line);
-    void MeshGetTextureVertice(char *line);
-    void MeshGetFace(char *line);
+    void MeshGetVertice(char *line, int lineNbr);
+    void MeshGetNormalVertice(char *line, int lineNbr);
+    void MeshGetTextureVertice(char *line, int lineNbr);
+    void MeshGetFace(char *line, int lineNbr);
     void MeshParser(std::string fileName);
 };

@@ -90,7 +90,7 @@ Mesh::Mesh(Shader meshShader, Matrix4 *view, Matrix4 *projection, Object obj)
         );
         glEnableVertexAttribArray(1);
     }
-    else if (obj.GetComponents() == 3)
+    if (obj.GetComponents() == 3)
     {
         glVertexAttribPointer(
             2,
@@ -105,6 +105,7 @@ Mesh::Mesh(Shader meshShader, Matrix4 *view, Matrix4 *projection, Object obj)
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     activeTexture = true;
+    
 }
 
 Mesh::~Mesh()
@@ -217,7 +218,7 @@ void    Mesh::bindVao()
 void    Mesh::drawMesh(GLFWwindow *window, Camera camera)
 {
     if (timer < 3)
-        timer += glfwGetTime() / 360;
+        timer += 0.01;
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && timer > 1)
     {
         textureTransition = true;
@@ -232,7 +233,7 @@ void    Mesh::drawMesh(GLFWwindow *window, Camera camera)
     if (textureTransition )
     {
         if (timerTextureTransition <= 1 && timerTextureTransition >= 0)
-            timerTextureTransition += glfwGetTime() / 360;
+            timerTextureTransition += 0.01;
         else
             textureTransition = false;
     }
@@ -252,7 +253,6 @@ void    Mesh::drawMesh(GLFWwindow *window, Camera camera)
 
     glBindTexture(GL_TEXTURE_2D, texture);
     glBindVertexArray(this->VAO);
-    //glDrawElements(GL_TRIANGLES, sizeof(*indices.data()) * indices.size(), GL_UNSIGNED_INT, 0);
     glDrawArrays(GL_TRIANGLES, 0, vertices.size());
     
 }

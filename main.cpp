@@ -63,8 +63,8 @@ int main() {
         return -1;
     }
 
-    Object test = Object("cubeoffset.obj");
-    Object teapot = Object("teapot.obj");
+    Object test = Object("42.obj");
+    Object teapot = Object("teapot2.obj");
 
     glfwMakeContextCurrent(window);
 
@@ -85,9 +85,6 @@ int main() {
 
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    int width, height, nrChannels;
-    unsigned char *data = stbi_load("Triforce.png", &width, &height, &nrChannels, 0);
-
 
     float time = 0;
     float lastX = 910;
@@ -100,7 +97,7 @@ int main() {
         glClearColor(0.0f, 0.45f, 0.3f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         ControlCamera(window, lastX, lastY, &newCamera);
-        mesh.SetModel(Rotate(*mesh.getModel(), M_PI / 64, Vector3(0, 1, 0)));
+        mesh.SetModel(Rotate(*mesh.getModel(), M_PI / 512, Vector3(0, 1, 0)));
         //mesh2.SetModel(Translate(*mesh2.getModel(), Vector3(2, 0, 0)));
         newCamera.RegisterKeyboardInput(window);
         view = newCamera.GetViewMatrix();

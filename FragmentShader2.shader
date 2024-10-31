@@ -6,6 +6,7 @@ out vec4 fragText;
 in vec3 vertexPos;
 in vec3 normal;
 in vec3 fragpos;
+in vec2 textureCoords;
 
 uniform vec3 cameraPos;
 
@@ -18,7 +19,7 @@ void main()
 {
 	vec3 lightColor = vec3(1.0, 1.0, 1.0);
 	vec3 color = vec3(1.0, 0.5, 0.31);
-	vec3 lightDir = normalize(vec3(10, 10, 10) - fragpos);
+	vec3 lightDir = normalize(vec3(10, 10, 0) - fragpos);
 
 	
 	// Output color = red 
@@ -39,6 +40,8 @@ void main()
 
 	vec3 result = (ambient + diffuse + specular) * color;
 	vec4 tmpTexture = texture(ourTexture, textpos);
+	if (textureCoords != vec2(0, 0))
+		tmpTexture = vec4((ambient + diffuse + specular), 1.0) * texture(ourTexture, textureCoords);
 	if (activeTexture)
 		fragText = vec4(mix(result.x, tmpTexture.x, timerTextureTransition), mix(result.y, tmpTexture.y, timerTextureTransition), mix(result.z, tmpTexture.z, timerTextureTransition), 1.0);
 	else

@@ -3,10 +3,12 @@
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec3 normalVertex;
+layout(location = 2) in vec2 textureVertex;
 
 out vec3 vertexPos;
 out vec3 normal;
 out vec3 fragpos;
+out vec2 textureCoords;
 
 uniform vec3 offset;
 
@@ -21,4 +23,5 @@ void main(){
     vertexPos = newVertex.xyz;
     fragpos = vec3(model * vec4(newVertex, 1.0));
     normal = mat3(transpose(inverse(model))) * normalVertex;
+    textureCoords = textureVertex;
 }
