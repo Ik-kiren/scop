@@ -65,6 +65,11 @@ void Shader::setFloat(const std::string name, float nbr)
     glUniform1f(glGetUniformLocation(programID, name.c_str()), nbr);
 }
 
+void Shader::setInt(const std::string name, int nbr)
+{
+    glUniform1i(glGetUniformLocation(programID, name.c_str()), nbr);
+}
+
 void Shader::setMatrix4(const std::string name, Matrix4 matrix)
 {
     glUniformMatrix4fv(glGetUniformLocation(programID, name.c_str()), 1, GL_FALSE, matrix.get_array());
@@ -73,6 +78,11 @@ void Shader::setMatrix4(const std::string name, Matrix4 matrix)
 void Shader::setVector3(const std::string name, Vector3 vec)
 {
     glUniform3f(glGetUniformLocation(programID, name.c_str()), vec.x, vec.y, vec.z);
+}
+
+void Shader::setFloatArray(const std::string name, size_t size, GLfloat *array)
+{
+    glUniform3fv(glGetUniformLocation(programID, name.c_str()), size, array);
 }
 
 void Shader::setBool(const std::string name, bool state)

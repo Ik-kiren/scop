@@ -19,6 +19,9 @@ class Mesh
     GLuint EBO;
     bool activeTexture;
     double timer;
+
+    bool textureTransition = false;
+    double timerTextureTransition = 1.0;
  public:
     Mesh(std::vector<GLfloat> vertices, std::vector<GLuint> indices, Shader meshShader, Matrix4 *view, Matrix4 *projection);
     Mesh(Shader meshShader, Matrix4 *view, Matrix4 *projection, Object obj);

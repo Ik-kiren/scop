@@ -216,9 +216,12 @@ void    Mesh::bindVao()
 
 void    Mesh::drawMesh(GLFWwindow *window, Camera camera)
 {
-    timer += glfwGetTime() / 360;
+    if (timer < 3)
+        timer += glfwGetTime() / 360;
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && timer > 1)
     {
+        textureTransition = true;
+        timerTextureTransition = 0;
         if (activeTexture)
             activeTexture = false;
         else
@@ -226,6 +229,15 @@ void    Mesh::drawMesh(GLFWwindow *window, Camera camera)
         timer = 0;
         
     }
+    if (textureTransition )
+    {
+        if (timerTextureTransition <= 1 && timerTextureTransition >= 0)
+            timerTextureTransition += glfwGetTime() / 360;
+        else
+            textureTransition = false;
+    }
+
+
     
     meshShader.use();
     meshShader.setMatrix4("model", model);
@@ -235,6 +247,7 @@ void    Mesh::drawMesh(GLFWwindow *window, Camera camera)
     meshShader.setVector3("cameraPos", camera.GetPosition());
     meshShader.setFloat("timeValue", sin(glfwGetTime()) / 0.3f);
     meshShader.setBool("activeTexture", activeTexture);
+    meshShader.setFloat("timerTextureTransition", timerTextureTransition);
 
 
     glBindTexture(GL_TEXTURE_2D, texture);

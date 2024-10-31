@@ -12,6 +12,7 @@ uniform vec3 cameraPos;
 uniform float timeValue;
 uniform sampler2D ourTexture;
 uniform bool activeTexture;
+uniform float timerTextureTransition;
 
 void main()
 {
@@ -37,8 +38,9 @@ void main()
 	vec3 specular = specularStrength * spec * lightColor;
 
 	vec3 result = (ambient + diffuse + specular) * color;
+	vec4 tmpTexture = texture(ourTexture, textpos);
 	if (activeTexture)
-		fragText = texture(ourTexture, textpos);
+		fragText = vec4(mix(result.x, tmpTexture.x, timerTextureTransition), mix(result.y, tmpTexture.y, timerTextureTransition), mix(result.z, tmpTexture.z, timerTextureTransition), 1.0);
 	else
-		fragText = vec4(result, 1.0);
+		fragText = vec4(mix(tmpTexture.x, result.x, timerTextureTransition), mix(tmpTexture.y, result.y, timerTextureTransition), mix(tmpTexture.z, result.z, timerTextureTransition), 1.0);
 }
