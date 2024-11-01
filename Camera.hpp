@@ -1,14 +1,16 @@
 #pragma once
 #include "Scop.hpp"
 
-class Camera
-{
+class Camera {
  private:
     Vector3 position;
     Vector3 front;
     Vector3 up;
     Vector3 right;
     Vector3 worldUp;
+
+    float lastPosX;
+    float lastPosY;
 
     float yaw;
     float pitch;
@@ -26,6 +28,6 @@ class Camera
     Vector3 GetUp();
     Matrix4 GetViewMatrix();
 
-    void RegisterMouseInput(float xoffset, float yoffset);
+    void RegisterMouseInput(GLFWwindow *window);
     void RegisterKeyboardInput(GLFWwindow *window);
 };

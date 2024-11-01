@@ -1,8 +1,7 @@
 #include "Camera.hpp"
 
 
-Camera::Camera(Vector3 cameraPos, Vector3 up) : position(cameraPos), worldUp(up)
-{
+Camera::Camera(Vector3 cameraPos, Vector3 up) : position(cameraPos), worldUp(up) {
     yaw = -90.0f;
     pitch = 0.0f;
     speed = 0.1f;
@@ -10,33 +9,38 @@ Camera::Camera(Vector3 cameraPos, Vector3 up) : position(cameraPos), worldUp(up)
     setCameraVectors();
 }
 
-Camera::~Camera()
-{
+Camera::~Camera() {}
 
-}
-
-Vector3 Camera::GetPosition()
-{
+Vector3 Camera::GetPosition() {
     return this->position;
 }
 
-Vector3 Camera::GetDirection()
-{
+Vector3 Camera::GetDirection() {
     return this->front;
 }
 
-Vector3 Camera::GetUp()
-{
+Vector3 Camera::GetUp() {
     return this->up;
 }
 
-Matrix4 Camera::GetViewMatrix()
-{
+Matrix4 Camera::GetViewMatrix() {
     return lookAt(position, position + front, up);
 }
 
-void Camera::RegisterMouseInput(float xoffset, float yoffset)
-{
+void Camera::RegisterMouseInput(GLFWwindow *window) {
+    double xpos, ypos;
+    float xoffset, yoffset;
+
+    glfwGetCursorPos(window, &xpos, &ypos);
+    xoffset = xpos - lastPosX;
+    yoffset = lastPosY - ypos;
+    lastPosX = xpos;
+    lastPosY = ypos;
+
+    const float sensitivity = 0.01f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
     yaw += xoffset;
     pitch += yoffset;
 
@@ -51,8 +55,7 @@ void Camera::RegisterMouseInput(float xoffset, float yoffset)
     front = normalized(tmpFront);
 }
 
-void Camera::RegisterKeyboardInput(GLFWwindow *window)
-{
+void Camera::RegisterKeyboardInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         position = position + normalized(cross(front, Vector3(0, 1, 0))) * speed;
     else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
@@ -67,8 +70,7 @@ void Camera::RegisterKeyboardInput(GLFWwindow *window)
         position = position - up * speed;
 }
 
-void Camera::setCameraVectors()
-{
+void Camera::setCameraVectors() {
     Vector3 tmpFront = Vector3();
     tmpFront.x = cos(yaw * (M_PI / 180) * cos(pitch * (M_PI / 180)));
     tmpFront.y = sin(pitch * (M_PI / 180));

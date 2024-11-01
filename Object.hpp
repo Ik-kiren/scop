@@ -3,11 +3,12 @@
 #include <iostream>
 #include <sstream>
 #include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <stdio.h>
+#include <string>
 #include <vector>
 
-class Object
-{
+class Object {
  private:
     std::vector<GLfloat> vertices;
 

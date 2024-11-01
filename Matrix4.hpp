@@ -17,6 +17,7 @@ class Matrix4
     Matrix4(Vector4 v1, Vector4 v2, Vector4 v3, Vector4 v4);
     ~Matrix4();
 
+    void MatrixArrayInit();
     Vector4& operator[](int index);
     Matrix4 operator*(Matrix4 rhs);
     Vector4 operator*(Vector4 rhs);

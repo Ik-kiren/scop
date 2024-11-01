@@ -1,13 +1,11 @@
 #include "Shader.hpp"
 
-Shader::Shader(const std::string vertexPath, const std::string shaderPath)
-{
-    std::string vertexCode; 
-    std::string fragmentCode;
-    std::ifstream vertexFile;
-    std::ifstream fragmentFile;
-    try
-    {
+Shader::Shader(const std::string vertexPath, const std::string shaderPath) {
+    std::string     vertexCode;
+    std::string     fragmentCode;
+    std::ifstream   vertexFile;
+    std::ifstream   fragmentFile;
+    try {
         vertexFile.open(vertexPath);
         fragmentFile.open(shaderPath);
 
@@ -23,8 +21,7 @@ Shader::Shader(const std::string vertexPath, const std::string shaderPath)
         vertexCode = vertexStream.str();
         fragmentCode = fragmentStream.str();
     }
-    catch(const std::exception& e)
-    {
+    catch(const std::exception& e) {
         std::cerr << e.what() << '\n';
     }
     const char* vShaderCode = vertexCode.c_str();
@@ -53,62 +50,51 @@ Shader::Shader(const std::string vertexPath, const std::string shaderPath)
     glDeleteShader(fragment);
 }
 
-Shader::~Shader(){}
+Shader::~Shader() {}
 
-void Shader::use()
-{
+void Shader::use() {
     glUseProgram(programID);
 }
 
-void Shader::setFloat(const std::string name, float nbr)
-{
+void Shader::setFloat(const std::string name, float nbr) {
     glUniform1f(glGetUniformLocation(programID, name.c_str()), nbr);
 }
 
-void Shader::setInt(const std::string name, int nbr)
-{
+void Shader::setInt(const std::string name, int nbr) {
     glUniform1i(glGetUniformLocation(programID, name.c_str()), nbr);
 }
 
-void Shader::setMatrix4(const std::string name, Matrix4 matrix)
-{
+void Shader::setMatrix4(const std::string name, Matrix4 matrix) {
     glUniformMatrix4fv(glGetUniformLocation(programID, name.c_str()), 1, GL_FALSE, matrix.get_array());
 }
 
-void Shader::setVector3(const std::string name, Vector3 vec)
-{
+void Shader::setVector3(const std::string name, Vector3 vec) {
     glUniform3f(glGetUniformLocation(programID, name.c_str()), vec.x, vec.y, vec.z);
 }
 
-void Shader::setFloatArray(const std::string name, size_t size, GLfloat *array)
-{
+void Shader::setFloatArray(const std::string name, size_t size, GLfloat *array) {
     glUniform3fv(glGetUniformLocation(programID, name.c_str()), size, array);
 }
 
-void Shader::setBool(const std::string name, bool state)
-{
+void Shader::setBool(const std::string name, bool state) {
     glUniform1i(glGetUniformLocation(programID, name.c_str()), state);
 }
 
-void Shader::checkShaderCompile(GLuint shader, const std::string name)
-{
+void Shader::checkShaderCompile(GLuint shader, const std::string name) {
     int success;
     char logs[1024];
     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
+    if (!success) {
         glGetShaderInfoLog(shader, 1024, NULL, logs);
         std::cout << "SHADER COMPILER ERROR: " << name << "\n" << logs << std::endl;
     }
 }
 
-void Shader::checkProgramCompile(GLuint programID)
-{
+void Shader::checkProgramCompile(GLuint programID) {
     int success;
     char logs[1024];
     glGetProgramiv(programID, GL_LINK_STATUS, &success);
-    if (!success)
-    {
+    if (!success) {
         glGetProgramInfoLog(programID, 1024, NULL, logs);
         std::cout << "PROGRAM LINKING ERROR:" << "\n" << logs << std::endl;
     }

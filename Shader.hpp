@@ -9,15 +9,14 @@
 #include "Matrix4.hpp"
 
 
-class Shader
-{
-private:
+class Shader {
+ private:
     GLuint programID;
 
     void checkShaderCompile(GLuint shader, const std::string name);
     void checkProgramCompile(GLuint programID);
-    
-public:
+
+ public:
     Shader(const std::string vertexPath, const std::string fragmentPath);
     ~Shader();
 

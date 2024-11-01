@@ -26,7 +26,7 @@ void main()
 	//color = vertexPos * timeValue;
 	
 
-	float ambientStrength = 0.2;
+	float ambientStrength = 0.6;
 	vec3 ambient = ambientStrength * lightColor;
 	vec2 textpos = vertexPos.xy;
 	float diff = max(dot(normalize(normal), lightDir), 0.0);
