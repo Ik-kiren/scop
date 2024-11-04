@@ -50,12 +50,14 @@ void Scop(GLFWwindow *window) {
     Mesh test = Mesh("./objects/cubeoffset.obj");
     Mesh teapot = Mesh("./objects/teapot3.0.obj");
 
-    Shader secondShader = Shader("./shaders/VertexShader2.shader", "./shaders/FragmentShader2.shader");
+    Shader secondShader = Shader("./shaders/VertexShader.shader", "./shaders/FragmentShader.shader");
+    Shader lightShader = Shader("./shaders/lightVS.shader", "./shaders/lightFS.shader");
 
     Object mesh = Object(secondShader, test);
+    Object lightObject = Object(lightShader, test);
 
-    mesh.SetModel(Translate(*mesh.getModel(), Vector3(0, 3, 0)));
     Camera newCamera = Camera(Vector3(0, 0 , 5), Vector3(0, 1, 0));
+    lightObject.translate(Vector3(5, 5, 0));
 
     while ( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
         glfwWindowShouldClose(window) == 0) {
@@ -64,7 +66,8 @@ void Scop(GLFWwindow *window) {
         newCamera.RegisterMouseInput(window);
         newCamera.RegisterKeyboardInput(window);
         mesh.SetModel(Rotate(*mesh.getModel(), M_PI / 512, Vector3(0, 1, 0)));
-        mesh.drawMesh(window, newCamera);
+        mesh.drawMesh(window, newCamera, lightObject.GetPosition());
+        lightObject.drawMesh(window, newCamera);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

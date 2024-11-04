@@ -7,6 +7,7 @@
 Object::Object(std::vector<GLfloat> vertices, std::vector<GLuint> indices, Shader meshShader)
     : vertices(vertices), indices(indices), meshShader(meshShader) {
     timer = 0;
+    position = Vector3(0, 0, 0);
     model = Matrix4(1.0f);
     projection = Perspective(60.0f, 1920 / 1200, 0.1f, 100.0f);
     Vector3 newVec;
@@ -48,6 +49,7 @@ Object::Object(Shader meshShader, Mesh mesh)
     model = Matrix4(1.0f);
     projection = Perspective(60.0f, 1920 / 1200, 0.1f, 100.0f);
     timer = 0;
+    position = Vector3(0, 0, 0);
     Vector3 newVec;
     for (size_t i = 0; i < mesh.GetVertices().size(); i++) {
         newVec[i % 3] = mesh.GetVertices()[i];
@@ -103,6 +105,7 @@ Object::Object(Shader meshShader, Mesh mesh)
 }
 
 Object::Object(const Object &obj) {
+    position = obj.position;
     vertices = obj.vertices;
     indices = obj.indices;
     vecVertices = obj.vecVertices;
@@ -198,6 +201,10 @@ Vector3 Object::getOffset() {
     return offsetVector;
 }
 
+Vector3 Object::GetPosition() {
+    return position;
+}
+
 void    Object::SetModel(Matrix4 newModel) {
     this->model = newModel;
 }
@@ -239,6 +246,47 @@ void    Object::drawMesh(GLFWwindow *window, Camera camera) {
     glBindTexture(GL_TEXTURE_2D, texture);
     glBindVertexArray(this->VAO);
     glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+}
+
+void    Object::drawMesh(GLFWwindow *window, Camera camera, Vector3 lightPos) {
+    if (timer < 3)
+        timer += 0.01;
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && timer > 1) {
+        textureTransition = true;
+        timerTextureTransition = 0;
+        if (activeTexture)
+            activeTexture = false;
+        else
+            activeTexture = true;
+        timer = 0;
+    }
+    if (textureTransition) {
+        if (timerTextureTransition <= 1 && timerTextureTransition >= 0)
+            timerTextureTransition += 0.01;
+        else
+            textureTransition = false;
+    }
+
+    meshShader.use();
+    meshShader.setMatrix4("model", model);
+    meshShader.setMatrix4("view", camera.GetViewMatrix());
+    meshShader.setMatrix4("projection", projection);
+    meshShader.setVector3("offset", getOffset());
+    meshShader.setVector3("cameraPos", camera.GetPosition());
+    meshShader.setFloat("timeValue", sin(glfwGetTime()) / 0.3f);
+    meshShader.setBool("activeTexture", activeTexture);
+    meshShader.setFloat("timerTextureTransition", timerTextureTransition);
+    meshShader.setVector3("lightPos", lightPos);
+
+
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindVertexArray(this->VAO);
+    glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+}
+
+void        Object::translate(Vector3 vec) {
+    position = position + vec;
+   this->model = Translate(this->model, vec);
 }
 
 Matrix4     *Object::getModel() {

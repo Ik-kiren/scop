@@ -21,6 +21,8 @@ class Object {
     GLuint                    VBO;
     GLuint                    EBO;
 
+    Vector3                   position;
+
     bool                      activeTexture;
     double                    timer;
 
@@ -40,9 +42,12 @@ class Object {
     float                   getOffsetY();
     float                   getOffsetX();
     Vector3                 getOffset();
+    Vector3                 GetPosition();
     GLuint                  getVao();
     Matrix4                 *getModel();
     void                    SetModel(Matrix4 newModel);
     void                    bindVao();
+    void                    translate(Vector3 vec);
     void                    drawMesh(GLFWwindow *window, Camera camera);
+    void                    drawMesh(GLFWwindow *window, Camera camera, Vector3 lightPos);
 };

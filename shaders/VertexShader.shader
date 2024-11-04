@@ -1,23 +1,27 @@
 #version 330 core
 
 // Input vertex data, different for all executions of this shader.
-layout(location = 0) in vec3 aPos;
-layout(location = 1) in vec3 aColor;
-layout(location = 2) in vec2 aTexCoord;
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec3 normalVertex;
+layout(location = 2) in vec2 textureVertex;
 
-out vec4 vertexPos;
-out vec3 vertexColor;
-out vec2 TexCoord;
-uniform float offset;
+out vec3 vertexPos;
+out vec3 normal;
+out vec3 fragpos;
+out vec2 textureCoords;
+
+uniform vec3 offset;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
 void main(){
-
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
-    vertexPos = gl_Position;
-    vertexColor = aColor;
-    TexCoord = aTexCoord;
+    vec3 newVertex = vertexPosition_modelspace;
+    newVertex = newVertex - offset;
+    gl_Position = projection * view * model * vec4(newVertex, 1.0);
+    vertexPos = newVertex.xyz;
+    fragpos = vec3(model * vec4(newVertex, 1.0));
+    normal = mat3(transpose(inverse(model))) * normalVertex;
+    textureCoords = textureVertex;
 }
