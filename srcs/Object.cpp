@@ -1,194 +1,229 @@
+#include <cmath>
 #include <vector>
-#include <sstream>
-#include <string>
-#include <fstream>
 #include <iostream>
 #include "../includes/Object.hpp"
+#include "../includes/Scop.hpp"
 
-class ParsingException : public std::exception {
- private:
-    std::string msg;
- public:
-    ParsingException(std::string str) : msg(str) {}
-    const char *what() const throw() {
-        return msg.c_str();
-    }
-};
-
-Object::Object(std::string str) {
-    this->MeshParser(str);
-}
-
-Object::~Object() {}
-
-std::vector<GLfloat>    Object::GetVertices() {
-    return vertices;
-}
-
-std::vector<GLfloat>    Object::GetMeshVertexArray() {
-    return meshVertexArray;
-}
-
-int                     Object::GetComponents() {
-    return components;
-}
-
-void Object::MeshCheckLineVertice(char *line) {
-    std::string tmpLine;
-    tmpLine = line;
-    if (tmpLine.find_first_not_of(" 0123456789.-") != std::string::npos)
-        throw ParsingException("parsing error: " + tmpLine);
-}
-
-void Object::MeshCheckLineFace(char *line) {
-    std::string tmpLine;
-    tmpLine = line;
-    if (tmpLine.find_first_not_of(" 0123456789/") != std::string::npos)
-        throw ParsingException("parsing error: " + tmpLine);
-    if (vertices.size() == 0)
-        throw ParsingException("parsing error: no vertices");
-}
-
-void Object::MeshGetVertice(char *line, int lineNbr) {
-    std::string tmpLine = line;
-    std::stringstream streamLine(tmpLine);
-    std::string buffer;
-    int i = 0;
-
-    while (std::getline(streamLine, buffer, ' ')) {
-        vertices.push_back(std::stof(buffer.c_str()));
-        i++;
-    }
-    if (i != 3)
-        throw ParsingException("parsing error: vertices line: " + std::to_string(lineNbr) + " " + tmpLine);
-}
-
-void Object::MeshGetNormalVertice(char *line, int lineNbr) {
-    std::string tmpLine = line;
-    std::stringstream streamLine(tmpLine);
-    std::string buffer;
-    int i = 0;
-
-    while (std::getline(streamLine, buffer, ' ')) {
-        normalVertices.push_back(std::stof(buffer.c_str()));
-        i++;
-    }
-    if (i != 3)
-        throw ParsingException("parsing error: normal vertices line: " + std::to_string(lineNbr) + " " + tmpLine);
-}
-
-void Object::MeshGetTextureVertice(char *line, int lineNbr) {
-    std::string tmpLine = line;
-    std::stringstream streamLine(tmpLine);
-    std::string buffer;
-    int i = 0;
-
-    while (std::getline(streamLine, buffer, ' ')) {
-        textureVertices.push_back(std::stof(buffer.c_str()));
-        i++;
-    }
-    if (i != 2)
-        throw ParsingException("parsing error: texture vertices line: " + std::to_string(lineNbr) + " " + tmpLine);
-}
-
-void Object::MeshGetFace(char *line, int lineNbr) {
-    std::string tmpLine = line;
-    std::stringstream streamLine(tmpLine);
-    std::string buffer;
-    std::vector<std::string> dividedLine;
-    std::vector<std::string> dividedFaces;
-
-    while (std::getline(streamLine, buffer, ' ')) {
-        dividedLine.push_back(buffer);
-        dividedFaces.push_back(buffer);
-        faces.push_back(atoi(buffer.c_str()) - 1);
-    }
-
-    if (dividedLine.size() == 4) {
-        faces.pop_back();
-        dividedFaces.pop_back();
-        dividedLine.erase(dividedLine.begin() + 1);
-        for (size_t i = 0; i < 3; i++) {
-            dividedFaces.push_back(dividedLine[i]);
-            faces.push_back(atoi(dividedLine[i].c_str()) - 1);
+Object::Object(std::vector<GLfloat> vertices, std::vector<GLuint> indices, Shader meshShader)
+    : vertices(vertices), indices(indices), meshShader(meshShader) {
+    timer = 0;
+    model = Matrix4(1.0f);
+    projection = Perspective(60.0f, 1920 / 1200, 0.1f, 100.0f);
+    Vector3 newVec;
+    for (size_t i = 0; i < this->vertices.size(); i++) {
+        newVec[i % 3] = this->vertices[i];
+        if (i % 3 == 2) {
+            this->vecVertices.push_back(newVec);
         }
     }
-    for (size_t i = 0; i < dividedFaces.size(); i++) {
-        std::stringstream tmp(dividedFaces[i]);
-        std::vector<std::string> tmpFaces;
-        int facesNbrCheck = 0;
-        while (std::getline(tmp, buffer, '/')) {
-            if (buffer[0] != '\0')
-                facesNbrCheck++;
-            tmpFaces.push_back(buffer);
-        }
-        if (facesNbrCheck > 1 && normalVertices.size() == 0 || facesNbrCheck > 1 && textureVertices.size() == 0)
-            throw ParsingException("error: faces indices reference non existant vertex: " +
-                std::to_string(lineNbr) + " " + tmpLine);
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
 
-        for (size_t j = 0; j < tmpFaces.size(); j++) {
-            if (j == 2) {
-                meshVertexArray.push_back(textureVertices[(atoi(tmpFaces[j - 1].c_str()) - 1) * 2]);
-                meshVertexArray.push_back(textureVertices[(atoi(tmpFaces[j - 1].c_str()) - 1) * 2 + 1]);
-            } else if (j == 1 && tmpFaces.size() > 2) {
-                meshVertexArray.push_back(normalVertices[(atoi(tmpFaces[j + 1].c_str()) - 1) * 3]);
-                meshVertexArray.push_back(normalVertices[(atoi(tmpFaces[j + 1].c_str()) - 1) * 3 + 1]);
-                meshVertexArray.push_back(normalVertices[(atoi(tmpFaces[j + 1].c_str()) - 1) * 3 + 2]);
-            } else {
-                meshVertexArray.push_back(vertices[(atoi(tmpFaces[j].c_str()) - 1) * 3]);
-                meshVertexArray.push_back(vertices[(atoi(tmpFaces[j].c_str()) - 1) * 3 + 1]);
-                meshVertexArray.push_back(vertices[(atoi(tmpFaces[j].c_str()) - 1) * 3 + 2]);
-            }
-        }
-        if (i > 0 && facesNbrCheck != components)
-            throw ParsingException("parsing error: faces numbers: " + std::to_string(lineNbr) + " " + tmpLine);
-        components = tmpFaces.size();
-    }
+    glBindVertexArray(VAO);
 
-    /*for (size_t i = 0; i < meshVertexArray.size(); i++)
-    {
-        std::cout << meshVertexArray[i] << std::endl;
-        if ((i + 1) % 8 == 0)
-            std::cout << std::endl;
-    }*/
+    this->InitTexture();
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(*vertices.data()) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(*indices.data()) * indices.size(), indices.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(
+            0,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            3 * sizeof(float),
+            reinterpret_cast<void*>(0));
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    activeTexture = false;
 }
 
-void Object::MeshParser(std::string fileName) {
-    std::ifstream file;
-    char buffer[500];
-    int lineNbr = 0;
-    try {
-        file.open(fileName);
-        if (!file.good())
-            throw ParsingException("parsing error: file " + fileName + " does not exist");
-        while (file.good()) {
-            lineNbr++;
-            file.getline(buffer, 500);
-            std::string strbuffer(buffer);
-            if (strbuffer.size() > 3 && buffer[0] == 'v' && buffer[1] == ' ') {
-                MeshCheckLineVertice(buffer + 2);
-                MeshGetVertice(buffer + 2, lineNbr);
-            }
-            if (strbuffer.size() > 4 && buffer[0] == 'v' && buffer[1] == 'n' && buffer[2] == ' ') {
-                MeshCheckLineVertice(buffer + 3);
-                MeshGetNormalVertice(buffer + 3, lineNbr);
-            }
-            if (strbuffer.size() > 4 && buffer[0] == 'v' && buffer[1] == 't' && buffer[2] == ' ') {
-                MeshCheckLineVertice(buffer + 3);
-                MeshGetTextureVertice(buffer + 3, lineNbr);
-            }
-            if (strbuffer.size() > 2 && buffer[0] == 'f') {
-                MeshCheckLineFace(buffer + 2);
-                MeshGetFace(buffer + 2, lineNbr);
-            }
+Object::Object(Shader meshShader, Mesh mesh)
+    : vertices(mesh.GetMeshVertexArray()), meshShader(meshShader) {
+    model = Matrix4(1.0f);
+    projection = Perspective(60.0f, 1920 / 1200, 0.1f, 100.0f);
+    timer = 0;
+    Vector3 newVec;
+    for (size_t i = 0; i < mesh.GetVertices().size(); i++) {
+        newVec[i % 3] = mesh.GetVertices()[i];
+        if (i % 3 == 2) {
+            this->vecVertices.push_back(newVec);
         }
-        if (meshVertexArray.size() == 0)
-            throw ParsingException("parsing error: no faces");
-        file.close();
     }
-    catch(ParsingException e) {
-        std::cerr << e.what() << std::endl;
-        glfwTerminate();
-        exit(0);
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO);
+
+    this->InitTexture();
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(*vertices.data()) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+    int strideSize = 3;
+    if (mesh.GetComponents() == 2)
+        strideSize = 6;
+    else if (mesh.GetComponents() == 3)
+        strideSize = 8;
+    glVertexAttribPointer(
+        0,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        strideSize * sizeof(float),
+        reinterpret_cast<void*>(0));
+    glEnableVertexAttribArray(0);
+    if (mesh.GetComponents() >= 2) {
+        glVertexAttribPointer(
+            1,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            strideSize * sizeof(float),
+            reinterpret_cast<void*>(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
     }
+    if (mesh.GetComponents() == 3) {
+        glVertexAttribPointer(
+            2,
+            2,
+            GL_FLOAT,
+            GL_FALSE,
+            strideSize * sizeof(float),
+            reinterpret_cast<void*>(6 * sizeof(float)));
+        glEnableVertexAttribArray(2);
+    }
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    activeTexture = false;
+}
+
+Object::~Object() {
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+}
+
+void Object::InitTexture() {
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load("./textures/Triforce.jpg", &width, &height, &nrChannels, 0);
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    } else {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+}
+
+std::vector<GLfloat> Object::getVertices() {
+    return this->vertices;
+}
+
+std::vector<GLuint> Object::getIndices() {
+    return this->indices;
+}
+
+GLuint  Object::getVao() {
+    return this->VAO;
+}
+
+float Object::getOffsetZ() {
+    float minZ = vecVertices[0].z;
+    float maxZ = vecVertices[0].z;
+    for (size_t i = 0; i < vecVertices.size(); i++) {
+        if (vecVertices[i].z < minZ)
+            minZ = vecVertices[i].z;
+        if (vecVertices[i].z > maxZ)
+            maxZ = vecVertices[i].z;
+    }
+    return maxZ / 2 + minZ / 2;
+}
+
+float Object::getOffsetY() {
+    float minY = vecVertices[0].y;
+    float maxY = vecVertices[0].y;
+    for (size_t i = 0; i < vecVertices.size(); i++) {
+        if (vecVertices[i].y < minY)
+            minY = vecVertices[i].y;
+        if (vecVertices[i].y > maxY)
+            maxY = vecVertices[i].y;
+    }
+    return maxY / 2 + minY / 2;
+}
+
+float Object::getOffsetX() {
+    float minX = vecVertices[0].x;
+    float maxX = vecVertices[0].x;
+    for (size_t i = 0; i < vecVertices.size(); i++) {
+        if (vecVertices[i].x < minX)
+            minX = vecVertices[i].x;
+        if (vecVertices[i].x > maxX)
+            maxX = vecVertices[i].x;
+    }
+    return maxX / 2 + minX / 2;
+}
+
+Vector3 Object::getOffset() {
+    Vector3 offsetVector(getOffsetX(), getOffsetY(), getOffsetZ());
+    return offsetVector;
+}
+
+void    Object::SetModel(Matrix4 newModel) {
+    this->model = newModel;
+}
+
+void    Object::bindVao() {
+    glBindVertexArray(this->VAO);
+}
+
+void    Object::drawMesh(GLFWwindow *window, Camera camera) {
+    if (timer < 3)
+        timer += 0.01;
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && timer > 1) {
+        textureTransition = true;
+        timerTextureTransition = 0;
+        if (activeTexture)
+            activeTexture = false;
+        else
+            activeTexture = true;
+        timer = 0;
+    }
+    if (textureTransition) {
+        if (timerTextureTransition <= 1 && timerTextureTransition >= 0)
+            timerTextureTransition += 0.01;
+        else
+            textureTransition = false;
+    }
+
+    meshShader.use();
+    meshShader.setMatrix4("model", model);
+    meshShader.setMatrix4("view", camera.GetViewMatrix());
+    meshShader.setMatrix4("projection", projection);
+    meshShader.setVector3("offset", getOffset());
+    meshShader.setVector3("cameraPos", camera.GetPosition());
+    meshShader.setFloat("timeValue", sin(glfwGetTime()) / 0.3f);
+    meshShader.setBool("activeTexture", activeTexture);
+    meshShader.setFloat("timerTextureTransition", timerTextureTransition);
+
+
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindVertexArray(this->VAO);
+    glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+}
+
+Matrix4     *Object::getModel() {
+    return &this->model;
 }

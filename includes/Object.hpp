@@ -1,41 +1,45 @@
 #pragma once
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <string>
 #include <vector>
+#include "./Vector3.hpp"
+#include "./Matrix4.hpp"
+#include "./Shader.hpp"
+#include "./Mesh.hpp"
+#include "./Scop.hpp"
+#include "./Camera.hpp"
 
 class Object {
  private:
-    std::vector<GLfloat> vertices;
+    std::vector<GLfloat>    vertices;
+    std::vector<GLuint>     indices;
+    std::vector<Vector3>    vecVertices;
+    Matrix4                 model;
+    Matrix4                 projection;
+    Shader                  meshShader;
+    unsigned int            texture;
+    GLuint VAO;
+    GLuint VBO;
+    GLuint EBO;
+    bool activeTexture;
+    double timer;
 
-    std::vector<GLfloat> normalVertices;
-    std::vector<GLfloat> textureVertices;
-
-    std::vector<GLuint> faces;
-
-    std::vector<GLuint> verticesIndices;
-    std::vector<GLuint> normalIndices;
-    std::vector<GLuint> textureIndices;
-
-    std::vector<GLfloat> meshVertexArray;
-
-    // 0: vertex, 1 : normale, 2: texture
-    int components;
+    bool textureTransition = false;
+    double timerTextureTransition = 1.0;
 
  public:
-    Object(std::string str);
+    Object(std::vector<GLfloat> vertices, std::vector<GLuint> indices, Shader meshShader);
+    Object(Shader meshShader, Mesh mesh);
     ~Object();
 
-    void MeshCheckLineVertice(char *line);
-    void MeshCheckLineFace(char *line);
-
-    std::vector<GLfloat>    GetMeshVertexArray();
-    std::vector<GLfloat>    GetVertices();
-    int                     GetComponents();
-
-    void MeshGetVertice(char *line, int lineNbr);
-    void MeshGetNormalVertice(char *line, int lineNbr);
-    void MeshGetTextureVertice(char *line, int lineNbr);
-    void MeshGetFace(char *line, int lineNbr);
-    void MeshParser(std::string fileName);
+    void                    InitTexture();
+    std::vector<GLfloat>    getVertices();
+    std::vector<GLuint>     getIndices();
+    float                   getOffsetZ();
+    float                   getOffsetY();
+    float                   getOffsetX();
+    Vector3                 getOffset();
+    GLuint                  getVao();
+    Matrix4                 *getModel();
+    void                    SetModel(Matrix4 newModel);
+    void                    bindVao();
+    void                    drawMesh(GLFWwindow *window, Camera camera);
 };

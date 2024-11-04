@@ -1,4 +1,5 @@
 #include <cmath>
+#include <iostream>
 #include "../includes/Scop.hpp"
 #include "../includes/Camera.hpp"
 #include "../includes/Mesh.hpp"
@@ -45,18 +46,15 @@ GLFWwindow *InitGLFW() {
 }
 
 void Scop(GLFWwindow *window) {
-    Object test = Object("cubeoffset.obj");
-    Object teapot = Object("teapot3.0.obj");
+    Mesh test = Mesh("./objects/cubeoffset.obj");
+    Mesh teapot = Mesh("./objects/teapot3.0.obj");
 
-    Shader firstShader = Shader("VertexShader.shader", "FragmentShader.shader");
-    Shader secondShader = Shader("VertexShader2.shader", "FragmentShader2.shader");
+    Shader firstShader = Shader("./shaders/VertexShader.shader", "./shaders/FragmentShader.shader");
+    Shader secondShader = Shader("./shaders/VertexShader2.shader", "./shaders/FragmentShader2.shader");
 
-    Mesh mesh = Mesh(secondShader, test);
-    Mesh mesh2 = Mesh(secondShader, teapot);
+    Object mesh = Object(secondShader, test);
+    Object mesh2 = Object(secondShader, teapot);
 
-    float time = 0;
-    float lastX = 910;
-    float lastY = 600;
     mesh.SetModel(Translate(*mesh.getModel(), Vector3(0, 3, 0)));
     Camera newCamera = Camera(Vector3(0, 0 , 5), Vector3(0, 1, 0));
 
