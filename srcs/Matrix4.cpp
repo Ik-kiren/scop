@@ -12,6 +12,14 @@ void Matrix4::MatrixArrayInit() {
 
 Matrix4::Matrix4() {}
 
+Matrix4::Matrix4(const Matrix4 &mat) {
+    matrix[0] = mat[0];
+    matrix[1] = mat[1];
+    matrix[2] = mat[2];
+    matrix[3] = mat[3];
+    MatrixArrayInit();
+}
+
 Matrix4::Matrix4(float nbr) {
     matrix[0] = Vector4(nbr, 0, 0, 0);
     matrix[1] = Vector4(0, nbr, 0, 0);
@@ -44,6 +52,15 @@ float *Matrix4::get_array() {
 }
 
 Vector4& Matrix4::operator[](int index) {
+    if (index < 0 || index > 3) {
+        std::string str = "matrix4 ";
+        str  = str + std::to_string(index) + "out of range";
+        throw std::out_of_range(str);
+    }
+    return matrix[index];
+}
+
+const Vector4& Matrix4::operator[](int index) const {
     if (index < 0 || index > 3) {
         std::string str = "matrix4 ";
         str  = str + std::to_string(index) + "out of range";

@@ -6,7 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include "Matrix4.hpp"
+#include "../includes/Matrix4.hpp"
 
 
 class Shader {
@@ -17,6 +17,8 @@ class Shader {
     void checkProgramCompile(GLuint programID);
 
  public:
+    Shader();
+    Shader(const Shader &shader);
     Shader(const std::string vertexPath, const std::string fragmentPath);
     ~Shader();
 
@@ -27,4 +29,6 @@ class Shader {
     void setVector3(const std::string name, Vector3 vec);
     void setFloatArray(const std::string name, size_t size, GLfloat *array);
     void setBool(const std::string name, bool state);
+
+    Shader &operator=(const Shader &rhs);
 };

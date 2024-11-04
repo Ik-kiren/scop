@@ -102,6 +102,23 @@ Object::Object(Shader meshShader, Mesh mesh)
     activeTexture = false;
 }
 
+Object::Object(const Object &obj) {
+    vertices = obj.vertices;
+    indices = obj.indices;
+    vecVertices = obj.vecVertices;
+    model = obj.model;
+    projection = obj.projection;
+    meshShader = obj.meshShader;
+    texture = obj.texture;
+    VAO = obj.VAO;
+    VBO = obj.VBO;
+    EBO = obj.EBO;
+    activeTexture = obj.activeTexture;
+    timer = obj.timer;
+    textureTransition = obj.textureTransition;
+    timerTextureTransition = obj.timerTextureTransition;
+}
+
 Object::~Object() {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);

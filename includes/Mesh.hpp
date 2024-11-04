@@ -19,11 +19,12 @@ class Mesh {
 
     std::vector<GLfloat> meshVertexArray;
 
-    // 0: vertex, 1 : normale, 2: texture
+    // 0: v, 1 : v/vn, 2: v/vn/vt
     int components;
 
  public:
     Mesh(std::string str);
+    Mesh(const Mesh &mesh);
     ~Mesh();
 
     void MeshCheckLineVertice(char *line);

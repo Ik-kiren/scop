@@ -1,8 +1,7 @@
 #pragma once
 #include <ostream>
 
-class Vector3
-{
+class Vector3 {
  public:
     float x;
     float y;
@@ -12,6 +11,7 @@ class Vector3
     Vector3();
     Vector3(float x, float y, float z);
     Vector3(Vector3 *vec);
+    Vector3(const Vector3 &vec);
     ~Vector3();
 
     float   &operator[](int index);

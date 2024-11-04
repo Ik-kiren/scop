@@ -12,7 +12,7 @@ float Dot(Vector3 vec1, Vector3 vec2) {
     return vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z;
 }
 
-float magnitude(Vector3 vec) {
+float magnitude(const Vector3 &vec) {
     return sqrt(pow(vec.x, 2) + pow(vec.y, 2) + pow(vec.z, 2));
 }
 

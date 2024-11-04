@@ -11,7 +11,7 @@
 
 // ScopMaths.cpp
 Vector3 cross(Vector3 vec1, Vector3 vec2);
-float magnitude(Vector3 vec);
+float magnitude(const Vector3 &vec);
 Vector3 normalized(Vector3 vec);
 Matrix4 Translate(Matrix4 mat, Vector3 vec);
 Matrix4 Transposed(Matrix4 mat);

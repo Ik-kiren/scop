@@ -8,6 +8,13 @@ Vector4::Vector4() {
     this->w = 0;
 }
 
+Vector4::Vector4(const Vector4 &vec) {
+    this->x = vec.x;
+    this->y = vec.y;
+    this->z = vec.z;
+    this->w = vec.w;
+}
+
 Vector4::Vector4(float x, float y, float z, float w) {
     this->x = x;
     this->y = y;
@@ -15,7 +22,7 @@ Vector4::Vector4(float x, float y, float z, float w) {
     this->w = w;
 }
 
-Vector4::Vector4(Vector3 vec) {
+Vector4::Vector4(const Vector3 &vec) {
     this->x = vec.x;
     this->y = vec.y;
     this->z = vec.z;

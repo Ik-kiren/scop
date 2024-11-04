@@ -1,4 +1,15 @@
 #include "../includes/Shader.hpp"
+#include <GLFW/glfw3.h>
+#include <iostream>
+#include <string>
+
+Shader::Shader() {
+    programID = 0;
+}
+
+Shader::Shader(const Shader &shader) {
+    programID = shader.programID;
+}
 
 Shader::Shader(const std::string vertexPath, const std::string shaderPath) {
     std::string     vertexCode;
@@ -23,6 +34,8 @@ Shader::Shader(const std::string vertexPath, const std::string shaderPath) {
     }
     catch(const std::exception& e) {
         std::cerr << e.what() << '\n';
+        glfwTerminate();
+        exit(0);
     }
     const char* vShaderCode = vertexCode.c_str();
     const char* fShaderCode = fragmentCode.c_str();
@@ -87,6 +100,8 @@ void Shader::checkShaderCompile(GLuint shader, const std::string name) {
     if (!success) {
         glGetShaderInfoLog(shader, 1024, NULL, logs);
         std::cout << "SHADER COMPILER ERROR: " << name << "\n" << logs << std::endl;
+        glfwTerminate();
+        exit(0);
     }
 }
 
@@ -97,5 +112,12 @@ void Shader::checkProgramCompile(GLuint programID) {
     if (!success) {
         glGetProgramInfoLog(programID, 1024, NULL, logs);
         std::cout << "PROGRAM LINKING ERROR:" << "\n" << logs << std::endl;
+        glfwTerminate();
+        exit(0);
     }
+}
+
+Shader &Shader::operator=(const Shader &rhs) {
+    this->programID = rhs.programID;
+    return *this;
 }

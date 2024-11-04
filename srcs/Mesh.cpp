@@ -19,6 +19,18 @@ Mesh::Mesh(std::string str) {
     this->MeshParser(str);
 }
 
+Mesh::Mesh(const Mesh &mesh) {
+    vertices = mesh.vertices;
+    normalVertices = mesh.normalVertices;
+    textureVertices = mesh.textureVertices;
+    faces = mesh.faces;
+    verticesIndices = mesh.verticesIndices;
+    normalIndices = mesh.normalIndices;
+    textureIndices = mesh.textureIndices;
+    meshVertexArray = mesh.meshVertexArray;
+    components = mesh.components;
+}
+
 Mesh::~Mesh() {}
 
 std::vector<GLfloat>    Mesh::GetVertices() {
@@ -122,7 +134,7 @@ void Mesh::MeshGetFace(char *line, int lineNbr) {
                 facesNbrCheck++;
             tmpFaces.push_back(buffer);
         }
-        if (facesNbrCheck > 1 && normalVertices.size() == 0 || facesNbrCheck > 1 && textureVertices.size() == 0)
+        if ((facesNbrCheck > 1 && normalVertices.size() == 0) || (facesNbrCheck > 1 && textureVertices.size() == 0))
             throw ParsingException("error: faces indices reference non existant vertex: " +
                 std::to_string(lineNbr) + " " + tmpLine);
 
@@ -186,7 +198,7 @@ void Mesh::MeshParser(std::string fileName) {
             throw ParsingException("parsing error: no faces");
         file.close();
     }
-    catch(ParsingException e) {
+    catch(ParsingException &e) {
         std::cerr << e.what() << std::endl;
         glfwTerminate();
         exit(0);

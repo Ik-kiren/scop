@@ -1,9 +1,8 @@
 #pragma once
-#include "Vector3.hpp"
 #include <ostream>
+#include "./Vector3.hpp"
 
-class Vector4
-{
+class Vector4 {
  public:
     float x;
     float y;
@@ -13,8 +12,9 @@ class Vector4
 
     Vector4();
     Vector4(float x, float y, float z, float w);
-    Vector4(Vector3 vec);
+    Vector4(const Vector3 &vec);
     Vector4(Vector3 vec, float nbr);
+    Vector4(const Vector4 &vec);
     ~Vector4();
 
     Vector4 &operator=(Vector4 const &rhs);

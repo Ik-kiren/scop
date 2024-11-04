@@ -9,25 +9,28 @@
 
 class Object {
  private:
-    std::vector<GLfloat>    vertices;
-    std::vector<GLuint>     indices;
-    std::vector<Vector3>    vecVertices;
-    Matrix4                 model;
-    Matrix4                 projection;
-    Shader                  meshShader;
-    unsigned int            texture;
-    GLuint VAO;
-    GLuint VBO;
-    GLuint EBO;
-    bool activeTexture;
-    double timer;
+    std::vector<GLfloat>      vertices;
+    std::vector<GLuint>       indices;
+    std::vector<Vector3>      vecVertices;
+    Matrix4                   model;
+    Matrix4                   projection;
+    Shader                    meshShader;
+    unsigned int              texture;
 
-    bool textureTransition = false;
-    double timerTextureTransition = 1.0;
+    GLuint                    VAO;
+    GLuint                    VBO;
+    GLuint                    EBO;
+
+    bool                      activeTexture;
+    double                    timer;
+
+    bool                      textureTransition = false;
+    double                    timerTextureTransition = 1.0;
 
  public:
     Object(std::vector<GLfloat> vertices, std::vector<GLuint> indices, Shader meshShader);
     Object(Shader meshShader, Mesh mesh);
+    Object(const Object &obj);
     ~Object();
 
     void                    InitTexture();

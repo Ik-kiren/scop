@@ -1,4 +1,6 @@
 #include "../includes/Vector3.hpp"
+#include <vector>
+#include <string>
 
 Vector3::Vector3() {
     this->x = 0;
@@ -16,6 +18,12 @@ Vector3::Vector3(Vector3 *vec) {
     this->x = vec->x;
     this->y = vec->y;
     this->z = vec->z;
+}
+
+Vector3::Vector3(const Vector3 &vec) {
+    this->x = vec.x;
+    this->y = vec.y;
+    this->z = vec.z;
 }
 
 Vector3::~Vector3() {}
