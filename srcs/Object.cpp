@@ -1,18 +1,21 @@
-#include "Object.hpp"
+#include <vector>
+#include <sstream>
+#include <string>
+#include <fstream>
+#include <iostream>
+#include "../includes/Object.hpp"
 
 class ParsingException : public std::exception {
  private:
     std::string msg;
  public:
     ParsingException(std::string str) : msg(str) {}
-    const char *what() const throw()
-    {
+    const char *what() const throw() {
         return msg.c_str();
-    };
+    }
 };
 
-Object::Object(std::string str)
-{
+Object::Object(std::string str) {
     this->MeshParser(str);
 }
 
@@ -26,8 +29,7 @@ std::vector<GLfloat>    Object::GetMeshVertexArray() {
     return meshVertexArray;
 }
 
-int                     Object::GetComponents()
-{
+int                     Object::GetComponents() {
     return components;
 }
 
@@ -75,8 +77,7 @@ void Object::MeshGetNormalVertice(char *line, int lineNbr) {
         throw ParsingException("parsing error: normal vertices line: " + std::to_string(lineNbr) + " " + tmpLine);
 }
 
-void Object::MeshGetTextureVertice(char *line, int lineNbr)
-{
+void Object::MeshGetTextureVertice(char *line, int lineNbr) {
     std::string tmpLine = line;
     std::stringstream streamLine(tmpLine);
     std::string buffer;
@@ -90,8 +91,7 @@ void Object::MeshGetTextureVertice(char *line, int lineNbr)
         throw ParsingException("parsing error: texture vertices line: " + std::to_string(lineNbr) + " " + tmpLine);
 }
 
-void Object::MeshGetFace(char *line, int lineNbr)
-{
+void Object::MeshGetFace(char *line, int lineNbr) {
     std::string tmpLine = line;
     std::stringstream streamLine(tmpLine);
     std::string buffer;
@@ -153,8 +153,7 @@ void Object::MeshGetFace(char *line, int lineNbr)
     }*/
 }
 
-void Object::MeshParser(std::string fileName)
-{
+void Object::MeshParser(std::string fileName) {
     std::ifstream file;
     char buffer[500];
     int lineNbr = 0;

@@ -1,5 +1,6 @@
-#include "Matrix4.hpp"
 #include <stdexcept>
+#include <string>
+#include "../includes/Matrix4.hpp"
 
 void Matrix4::MatrixArrayInit() {
     for (size_t i = 0; i < 4; i++) {

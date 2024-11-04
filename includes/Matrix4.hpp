@@ -1,12 +1,11 @@
 #pragma once
-#include "Vector3.hpp"
-#include "Vector4.hpp"
 #include <string>
 #include <iostream>
+#include "./Vector3.hpp"
+#include "./Vector4.hpp"
 
 
-class Matrix4
-{
+class Matrix4 {
  public:
     Vector4 matrix[4];
     float matrix_array[16];

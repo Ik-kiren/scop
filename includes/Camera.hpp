@@ -1,5 +1,8 @@
 #pragma once
-#include "Scop.hpp"
+#include <cmath>
+#include "./Scop.hpp"
+#include "./Vector3.hpp"
+#include "./Matrix4.hpp"
 
 class Camera {
  private:

@@ -1,4 +1,8 @@
-#include "Mesh.hpp"
+#include <cmath>
+#include <vector>
+#include <iostream>
+#include "../includes/Mesh.hpp"
+#include "../includes/Scop.hpp"
 
 Mesh::Mesh(std::vector<GLfloat> vertices, std::vector<GLuint> indices, Shader meshShader)
     : vertices(vertices), indices(indices), meshShader(meshShader) {
@@ -40,8 +44,7 @@ Mesh::Mesh(std::vector<GLfloat> vertices, std::vector<GLuint> indices, Shader me
 }
 
 Mesh::Mesh(Shader meshShader, Object obj)
-    : vertices(obj.GetMeshVertexArray()), meshShader(meshShader)
-{
+    : vertices(obj.GetMeshVertexArray()), meshShader(meshShader) {
     model = Matrix4(1.0f);
     projection = Perspective(60.0f, 1920 / 1200, 0.1f, 100.0f);
     timer = 0;

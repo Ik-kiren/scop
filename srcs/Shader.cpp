@@ -1,4 +1,4 @@
-#include "Shader.hpp"
+#include "../includes/Shader.hpp"
 
 Shader::Shader(const std::string vertexPath, const std::string shaderPath) {
     std::string     vertexCode;

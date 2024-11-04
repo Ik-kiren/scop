@@ -1,4 +1,5 @@
-#include "Scop.hpp"
+#include <cmath>
+#include "../includes/Scop.hpp"
 
 Vector3 cross(Vector3 vec1, Vector3 vec2) {
     return Vector3(

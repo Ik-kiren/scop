@@ -1,4 +1,4 @@
-#include "Vector3.hpp"
+#include "../includes/Vector3.hpp"
 
 Vector3::Vector3() {
     this->x = 0;

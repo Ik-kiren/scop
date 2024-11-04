@@ -1,10 +1,6 @@
 #pragma once
-#include <fstream>
-#include <iostream>
-#include <sstream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <stdio.h>
 #include <string>
 #include <vector>
 
@@ -25,6 +21,7 @@ class Object {
 
     // 0: vertex, 1 : normale, 2: texture
     int components;
+
  public:
     Object(std::string str);
     ~Object();

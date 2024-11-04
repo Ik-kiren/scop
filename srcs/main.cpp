@@ -1,5 +1,8 @@
-#include "Scop.hpp"
 #include <cmath>
+#include "../includes/Scop.hpp"
+#include "../includes/Camera.hpp"
+#include "../includes/Mesh.hpp"
+#include "../includes/Object.hpp"
 
 void viewport_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);

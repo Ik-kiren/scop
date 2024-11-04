@@ -1,7 +1,11 @@
 #pragma once
-#include "Scop.hpp"
-
-class Camera;
+#include <vector>
+#include "./Vector3.hpp"
+#include "./Matrix4.hpp"
+#include "./Shader.hpp"
+#include "./Object.hpp"
+#include "./Scop.hpp"
+#include "./Camera.hpp"
 
 class Mesh {
  private:

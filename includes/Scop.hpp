@@ -1,28 +1,13 @@
 #pragma once
 
-#include <iostream>
-#include <fstream>
-#include <ostream>
-#include <sstream>
-#include <math.h>
-#include <stdio.h>
-#include <vector>
-
 #include <GL/glew.h>
-
 #include <GLFW/glfw3.h>
 
-#include "Object.hpp"
-#include "stb_image.h"
-#include "Shader.hpp"
-#include "Vector3.hpp"
-#include "Vector4.hpp"
-#include "Matrix4.hpp"
-#include "Camera.hpp"
-#include "Mesh.hpp"
+#include <vector>
 
-
-void Parser(std::string fileName, std::vector<GLfloat> *vertices, std::vector<GLuint> *indices);
+#include "./stb_image.h"
+#include "./Matrix4.hpp"
+#include "./Vector3.hpp"
 
 // ScopMaths.cpp
 Vector3 cross(Vector3 vec1, Vector3 vec2);

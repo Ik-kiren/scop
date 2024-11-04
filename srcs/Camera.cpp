@@ -1,4 +1,4 @@
-#include "Camera.hpp"
+#include "../includes/Camera.hpp"
 
 
 Camera::Camera(Vector3 cameraPos, Vector3 up) : position(cameraPos), worldUp(up) {
@@ -7,6 +7,8 @@ Camera::Camera(Vector3 cameraPos, Vector3 up) : position(cameraPos), worldUp(up)
     speed = 0.1f;
     sensitivity = 0.0001f;
     setCameraVectors();
+    lastPosX = cameraPos.x;
+    lastPosY = cameraPos.y;
 }
 
 Camera::~Camera() {}
