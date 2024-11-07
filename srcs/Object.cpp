@@ -66,11 +66,11 @@ Object::Object(Shader meshShader, Mesh mesh)
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(*vertices.data()) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
-    int strideSize = 3;
+    int strideSize = 6;
     if (mesh.GetComponents() == 2)
-        strideSize = 6;
+        strideSize = 9;
     else if (mesh.GetComponents() == 3)
-        strideSize = 8;
+        strideSize = 11;
     glVertexAttribPointer(
         0,
         3,
@@ -98,6 +98,23 @@ Object::Object(Shader meshShader, Mesh mesh)
             strideSize * sizeof(float),
             reinterpret_cast<void*>(6 * sizeof(float)));
         glEnableVertexAttribArray(2);
+        glVertexAttribPointer(
+            3,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            strideSize * sizeof(float),
+            reinterpret_cast<void*>(8 * sizeof(float)));
+        glEnableVertexAttribArray(3);
+    } else {
+        glVertexAttribPointer(
+            3,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            strideSize * sizeof(float),
+            reinterpret_cast<void*>((strideSize - 3) * sizeof(float)));
+        glEnableVertexAttribArray(3);
     }
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);

@@ -5,6 +5,7 @@ in vec3 vertexPos;
 in vec3 normal;
 in vec3 fragpos;
 in vec2 textureCoords;
+in vec3 color;
 
 uniform vec3 cameraPos;
 
@@ -17,7 +18,6 @@ uniform vec3 lightPos;
 void main()
 {
 	vec3 lightColor = vec3(1.0, 1.0, 1.0);
-	vec3 color = vec3(1.0, 0.5, 0.31);
 	vec3 lightDir = normalize(lightPos - fragpos);
 
 	float ambientStrength = 0.6;

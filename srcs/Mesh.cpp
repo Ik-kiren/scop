@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include "../includes/Mesh.hpp"
+#include "../includes/Vector3.hpp"
 
 class ParsingException : public std::exception {
  private:
@@ -109,7 +110,10 @@ void Mesh::MeshGetFace(char *line, int lineNbr) {
     std::string buffer;
     std::vector<std::string> dividedLine;
     std::vector<std::string> dividedFaces;
+    int                      coloIndices = lineNbr % 5;
 
+    Vector3 blackShades[5] = {Vector3(0.0, 0.0, 0.0), Vector3(0.05, 0.05, 0.05), Vector3(0.1, 0.1, 0.1),
+        Vector3(0.15, 0.15, 0.15), Vector3(0.2, 0.2, 0.2)};
     while (std::getline(streamLine, buffer, ' ')) {
         dividedLine.push_back(buffer);
         dividedFaces.push_back(buffer);
@@ -152,15 +156,17 @@ void Mesh::MeshGetFace(char *line, int lineNbr) {
                 meshVertexArray.push_back(vertices[(atoi(tmpFaces[j].c_str()) - 1) * 3 + 2]);
             }
         }
+        meshVertexArray.push_back(blackShades[coloIndices].x);
+        meshVertexArray.push_back(blackShades[coloIndices].y);
+        meshVertexArray.push_back(blackShades[coloIndices].z);
         if (i > 0 && facesNbrCheck != components)
             throw ParsingException("parsing error: faces numbers: " + std::to_string(lineNbr) + " " + tmpLine);
         components = tmpFaces.size();
     }
 
-    /*for (size_t i = 0; i < meshVertexArray.size(); i++)
-    {
+    /*for (size_t i = 0; i < meshVertexArray.size(); i++) {
         std::cout << meshVertexArray[i] << std::endl;
-        if ((i + 1) % 8 == 0)
+        if ((i + 1) % 11 == 0)
             std::cout << std::endl;
     }*/
 }

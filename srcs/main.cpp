@@ -46,8 +46,21 @@ GLFWwindow *InitGLFW() {
     return window;
 }
 
+void ScreenFocus(GLFWwindow *window, double *timer) {
+    if (*timer < 2)
+        *timer += 0.01;
+    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && *timer >= 1) {
+        if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        } else {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        }
+        *timer = 0;
+    }
+}
+
 void Scop(GLFWwindow *window) {
-    Mesh test = Mesh("./objects/cubeoffset.obj");
+    Mesh test = Mesh("./objects/teapot3.0.obj");
     Mesh teapot = Mesh("./objects/teapot3.0.obj");
 
     Shader secondShader = Shader("./shaders/VertexShader.shader", "./shaders/FragmentShader.shader");
@@ -58,19 +71,20 @@ void Scop(GLFWwindow *window) {
 
     Camera newCamera = Camera(Vector3(0, 0 , 5), Vector3(0, 1, 0));
     lightObject.translate(Vector3(5, 5, 0));
-
+    double timer = 0;
     while ( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
         glfwWindowShouldClose(window) == 0) {
-        glClearColor(0.0f, 0.45f, 0.3f, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        newCamera.RegisterMouseInput(window);
-        newCamera.RegisterKeyboardInput(window);
-        mesh.SetModel(Rotate(*mesh.getModel(), M_PI / 512, Vector3(0, 1, 0)));
-        mesh.drawMesh(window, newCamera, lightObject.GetPosition());
-        lightObject.drawMesh(window, newCamera);
+            ScreenFocus(window, &timer);
+            glClearColor(0.0f, 0.45f, 0.3f, 0.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            newCamera.RegisterMouseInput(window);
+            newCamera.RegisterKeyboardInput(window);
+            mesh.SetModel(Rotate(*mesh.getModel(), M_PI / 512, Vector3(0, 1, 0)));
+            mesh.drawMesh(window, newCamera, lightObject.GetPosition());
+            lightObject.drawMesh(window, newCamera);
 
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+            glfwSwapBuffers(window);
+            glfwPollEvents();
     }
 
     glfwTerminate();
