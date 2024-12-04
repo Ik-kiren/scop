@@ -9,8 +9,12 @@ class Vector4 {
     float z;
     float w;
 
+    static const Vector4 GREEN;
+    static const Vector4 TGREEN;
+    static const Vector4 RED;
+    static const Vector4 TRED;
 
-    Vector4();
+    Vector4(); 
     Vector4(float x, float y, float z, float w);
     Vector4(const Vector3 &vec);
     Vector4(Vector3 vec, float nbr);

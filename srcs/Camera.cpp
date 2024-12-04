@@ -1,5 +1,7 @@
 #include "../includes/Camera.hpp"
+#include "../includes/Scop.hpp"
 
+Camera::Camera() {}
 
 Camera::Camera(Vector3 cameraPos, Vector3 up) : position(cameraPos), worldUp(up) {
     yaw = -90.0f;
@@ -27,6 +29,10 @@ Vector3 Camera::GetUp() {
 
 Matrix4 Camera::GetViewMatrix() {
     return lookAt(position, position + front, up);
+}
+
+Matrix4 Camera::GetViewMatrix(Vector3 lookatpos) {
+    return lookAt(position, lookatpos, up);
 }
 
 void Camera::RegisterMouseInput(GLFWwindow *window) {
@@ -81,4 +87,19 @@ void Camera::setCameraVectors() {
 
     right = normalized(cross(front, worldUp));
     up = normalized(cross(right, front));
+}
+
+Camera &Camera::operator=(const Camera &rhs) {
+    this->position = rhs.position;
+    this->front = rhs.front;
+    this->up = rhs.up;
+    this->right = rhs.right;
+    this->worldUp = rhs.worldUp;
+    this->lastPosX = rhs.lastPosX;
+    this->lastPosY = rhs.lastPosY;
+    this->yaw = rhs.yaw;
+    this->pitch = rhs.pitch;
+    this->speed = rhs.speed;
+    this->sensitivity = rhs.sensitivity;
+    return *this;
 }

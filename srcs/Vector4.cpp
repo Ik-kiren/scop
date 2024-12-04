@@ -84,3 +84,8 @@ std::ostream &operator<<(std::ostream &out, Vector4 &rhs) {
     out << ">" << std::endl;
     return out;
 }
+
+const Vector4 Vector4::GREEN = Vector4(0.1, 0.8, 0.1, 1.0);
+const Vector4 Vector4::TGREEN = Vector4(0.1, 0.8, 0.1, 0.5);
+const Vector4 Vector4::RED = Vector4(0.8, 0.1, 0.1, 1.0);
+const Vector4 Vector4::TRED = Vector4(0.8, 0.1, 0.1, 0.5);

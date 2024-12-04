@@ -8,6 +8,15 @@
 #include "./stb_image.h"
 #include "./Matrix4.hpp"
 #include "./Vector3.hpp"
+#include "./Vector2.hpp"
+#include "./Font.hpp"
+
+struct Character {
+    unsigned int TextureID; // ID handle of the glyph texture
+    Vector2   Size;      // Size of glyph
+    Vector2   Bearing;   // Offset from baseline to left/top of glyph
+    unsigned int Advance;   // Horizontal offset to advance to next glyph
+};
 
 // ScopMaths.cpp
 Vector3 cross(Vector3 vec1, Vector3 vec2);

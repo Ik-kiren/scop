@@ -14,6 +14,8 @@ class Vector3 {
     Vector3(const Vector3 &vec);
     ~Vector3();
 
+    Vector3 Inverse();
+
     float   &operator[](int index);
     Vector3 operator*(float rhs);
     Vector3 operator*(Vector3 rhs);

@@ -4,124 +4,62 @@
 #include "../includes/Object.hpp"
 #include "../includes/Scop.hpp"
 
-Object::Object(std::vector<GLfloat> vertices, std::vector<GLuint> indices, Shader meshShader)
-    : vertices(vertices), indices(indices), meshShader(meshShader) {
+Object::Object() {}
+
+Object::Object(Shader &meshShader, Mesh *mesh)
+    : vertices(mesh->GetMeshVertexArray()), meshShader(meshShader), mesh(mesh) {
+    model = Matrix4(1.0f);
+    projection = Perspective(30.0f, 1920 / 1200, 0.1f, 100.0f);
+    // projection = Orthographique(-19, 19, -19, 19, 0, 40);
+    this->color = Vector4(1.0, 1.0, 1.0, 0.5);
     timer = 0;
     position = Vector3(0, 0, 0);
-    model = Matrix4(1.0f);
-    projection = Perspective(60.0f, 1920 / 1200, 0.1f, 100.0f);
     Vector3 newVec;
-    for (size_t i = 0; i < this->vertices.size(); i++) {
-        newVec[i % 3] = this->vertices[i];
+    for (size_t i = 0; i < vertices.size(); i++) {
+        newVec[i % 3] = vertices[i];
         if (i % 3 == 2) {
             this->vecVertices.push_back(newVec);
         }
     }
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-    glBindVertexArray(VAO);
-
-    this->InitTexture();
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(*vertices.data()) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(*indices.data()) * indices.size(), indices.data(), GL_STATIC_DRAW);
-
-    glVertexAttribPointer(
-            0,
-            3,
-            GL_FLOAT,
-            GL_FALSE,
-            3 * sizeof(float),
-            reinterpret_cast<void*>(0));
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     activeTexture = false;
 }
 
-Object::Object(Shader meshShader, Mesh mesh)
-    : vertices(mesh.GetMeshVertexArray()), meshShader(meshShader) {
+Object::Object(Shader &meshShader, Mesh *mesh, Vector3 color)
+    : vertices(mesh->GetMeshVertexArray()), meshShader(meshShader), mesh(mesh) {
     model = Matrix4(1.0f);
-    projection = Perspective(60.0f, 1920 / 1200, 0.1f, 100.0f);
+    projection = Perspective(30.0f, 1920 / 1200, 0.1f, 100.0f);
+    // projection = Orthographique(-19, 19, -19, 19, 0, 40);
+    this->color = Vector4(color.x, color.y, color.z, 1.0);
     timer = 0;
     position = Vector3(0, 0, 0);
     Vector3 newVec;
-    for (size_t i = 0; i < mesh.GetVertices().size(); i++) {
-        newVec[i % 3] = mesh.GetVertices()[i];
+    for (size_t i = 0; i < vertices.size(); i++) {
+        newVec[i % 3] = vertices[i];
         if (i % 3 == 2) {
             this->vecVertices.push_back(newVec);
         }
     }
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-
-    glBindVertexArray(VAO);
-
-    this->InitTexture();
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(*vertices.data()) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
-    int strideSize = 6;
-    if (mesh.GetComponents() == 2)
-        strideSize = 9;
-    else if (mesh.GetComponents() == 3)
-        strideSize = 11;
-    glVertexAttribPointer(
-        0,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        strideSize * sizeof(float),
-        reinterpret_cast<void*>(0));
-    glEnableVertexAttribArray(0);
-    if (mesh.GetComponents() >= 2) {
-        glVertexAttribPointer(
-            1,
-            3,
-            GL_FLOAT,
-            GL_FALSE,
-            strideSize * sizeof(float),
-            reinterpret_cast<void*>(3 * sizeof(float)));
-        glEnableVertexAttribArray(1);
-    }
-    if (mesh.GetComponents() == 3) {
-        glVertexAttribPointer(
-            2,
-            2,
-            GL_FLOAT,
-            GL_FALSE,
-            strideSize * sizeof(float),
-            reinterpret_cast<void*>(6 * sizeof(float)));
-        glEnableVertexAttribArray(2);
-        glVertexAttribPointer(
-            3,
-            3,
-            GL_FLOAT,
-            GL_FALSE,
-            strideSize * sizeof(float),
-            reinterpret_cast<void*>(8 * sizeof(float)));
-        glEnableVertexAttribArray(3);
-    } else {
-        glVertexAttribPointer(
-            3,
-            3,
-            GL_FLOAT,
-            GL_FALSE,
-            strideSize * sizeof(float),
-            reinterpret_cast<void*>((strideSize - 3) * sizeof(float)));
-        glEnableVertexAttribArray(3);
-    }
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     activeTexture = false;
 }
 
-Object::Object(const Object &obj) {
+Object::Object(Shader &meshShader, Mesh *mesh, Vector4 color)
+    : vertices(mesh->GetMeshVertexArray()), meshShader(meshShader), mesh(mesh), color(color) {
+    model = Matrix4(1.0f);
+    projection = Perspective(30.0f, 1920 / 1200, 0.1f, 100.0f);
+    // projection = Orthographique(-19, 19, -19, 19, 0, 40);
+    timer = 0;
+    position = Vector3(0, 0, 0);
+    Vector3 newVec;
+    for (size_t i = 0; i < vertices.size(); i++) {
+        newVec[i % 3] = vertices[i];
+        if (i % 3 == 2) {
+            this->vecVertices.push_back(newVec);
+        }
+    }
+    activeTexture = false;
+}
+
+Object::Object(const Object &obj) : mesh(obj.mesh) {
     position = obj.position;
     vertices = obj.vertices;
     indices = obj.indices;
@@ -129,40 +67,14 @@ Object::Object(const Object &obj) {
     model = obj.model;
     projection = obj.projection;
     meshShader = obj.meshShader;
-    texture = obj.texture;
-    VAO = obj.VAO;
-    VBO = obj.VBO;
-    EBO = obj.EBO;
     activeTexture = obj.activeTexture;
+    color = obj.color;
     timer = obj.timer;
     textureTransition = obj.textureTransition;
     timerTextureTransition = obj.timerTextureTransition;
 }
 
 Object::~Object() {
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
-}
-
-void Object::InitTexture() {
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    int width, height, nrChannels;
-    unsigned char *data = stbi_load("./textures/Triforce.jpg", &width, &height, &nrChannels, 0);
-    if (data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    } else {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
 }
 
 std::vector<GLfloat> Object::getVertices() {
@@ -174,7 +86,7 @@ std::vector<GLuint> Object::getIndices() {
 }
 
 GLuint  Object::getVao() {
-    return this->VAO;
+    return this->mesh->getVAO();
 }
 
 float Object::getOffsetZ() {
@@ -222,12 +134,16 @@ Vector3 Object::GetPosition() {
     return position;
 }
 
+Vector4 Object::getColor() {
+    return color;
+}
+
 void    Object::SetModel(Matrix4 newModel) {
     this->model = newModel;
 }
 
 void    Object::bindVao() {
-    glBindVertexArray(this->VAO);
+    glBindVertexArray(this->mesh->getVAO());
 }
 
 void    Object::drawMesh(GLFWwindow *window, Camera camera) {
@@ -250,6 +166,8 @@ void    Object::drawMesh(GLFWwindow *window, Camera camera) {
     }
 
     meshShader.use();
+
+    meshShader.setVector4("newColor", color);
     meshShader.setMatrix4("model", model);
     meshShader.setMatrix4("view", camera.GetViewMatrix());
     meshShader.setMatrix4("projection", projection);
@@ -259,14 +177,18 @@ void    Object::drawMesh(GLFWwindow *window, Camera camera) {
     meshShader.setBool("activeTexture", activeTexture);
     meshShader.setFloat("timerTextureTransition", timerTextureTransition);
 
-
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glBindVertexArray(this->VAO);
+    glBindTexture(GL_TEXTURE_2D, mesh->getTexture());
+    glBindVertexArray(mesh->getVAO());
     glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 }
 
+void Object::TextureTransition() {
+    activeTexture = (activeTexture) ? false : true;
+}
+
 void    Object::drawMesh(GLFWwindow *window, Camera camera, Vector3 lightPos) {
-    if (timer < 3)
+    (void)window;
+    /*if (timer < 3)
         timer += 0.01;
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && timer > 1) {
         textureTransition = true;
@@ -282,11 +204,11 @@ void    Object::drawMesh(GLFWwindow *window, Camera camera, Vector3 lightPos) {
             timerTextureTransition += 0.01;
         else
             textureTransition = false;
-    }
-
+    }*/
     meshShader.use();
+    meshShader.setVector4("newColor", color);
     meshShader.setMatrix4("model", model);
-    meshShader.setMatrix4("view", camera.GetViewMatrix());
+    meshShader.setMatrix4("view", camera.GetViewMatrix(Vector3(0, 0, 0)));
     meshShader.setMatrix4("projection", projection);
     meshShader.setVector3("offset", getOffset());
     meshShader.setVector3("cameraPos", camera.GetPosition());
@@ -295,17 +217,63 @@ void    Object::drawMesh(GLFWwindow *window, Camera camera, Vector3 lightPos) {
     meshShader.setFloat("timerTextureTransition", timerTextureTransition);
     meshShader.setVector3("lightPos", lightPos);
 
-
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glBindVertexArray(this->VAO);
+    glBindTexture(GL_TEXTURE_2D, mesh->getTexture());
+    glBindVertexArray(mesh->getVAO());
     glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 }
 
 void        Object::translate(Vector3 vec) {
     position = position + vec;
-   this->model = Translate(this->model, vec);
+    this->model = Translate(this->model, vec);
+}
+
+void        Object::rotate(Vector3 vec) {
+    this->model = Rotate(this->model, M_PI / 512, vec);
+}
+
+void        Object::rotate(Vector3 vec, float speed) {
+    this->model = Rotate(this->model, M_PI / speed * 2, vec);
 }
 
 Matrix4     *Object::getModel() {
     return &this->model;
+}
+
+Object  *Object::clone() {
+    return new Object(this->meshShader, this->mesh);
+}
+
+Object &Object::operator=(const Object &rhs) {
+    this->position = rhs.position;
+    this->vertices = rhs.vertices;
+    this->indices = rhs.indices;
+    this->vecVertices = rhs.vecVertices;
+    this->model = rhs.model;
+    this->projection = rhs.projection;
+    this->meshShader = rhs.meshShader;
+    this->mesh = rhs.mesh;
+    this->activeTexture = rhs.activeTexture;
+    this->timer = rhs.timer;
+    this->textureTransition = rhs.textureTransition;
+    this->timerTextureTransition = rhs.timerTextureTransition;
+    this->color = rhs.color;
+    return *this;
+}
+
+
+void    Object::print() {
+    std::cout << "pos = " << position << std::endl;
+    std::cout << "VAO = " << mesh->getVAO() << std::endl;
+    std::cout << "vertices = " << vertices.size() << std::endl;
+    std::cout << "indices = "<< indices.size() << std::endl;
+    std::cout << "vecvertices = " << vecVertices.size() << std::endl;
+    std::cout << "model = " << model << std::endl;
+    std::cout << "projection = " << projection << std::endl;
+    std::cout << "meshShader = " << meshShader.programID << std::endl;
+    std::cout << "activatedTexture = " << activeTexture  << std::endl;
+    std::cout << "timer = " << timer  << std::endl;
+    std::cout << "textureTransition = " << textureTransition  << std::endl;
+    std::cout << "timerTexture = " << timerTextureTransition  << std::endl;
+    std::cout << "color = " << color << std::endl;
+    std::cout << std::endl;
 }

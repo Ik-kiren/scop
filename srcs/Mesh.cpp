@@ -5,6 +5,7 @@
 #include <iostream>
 #include "../includes/Mesh.hpp"
 #include "../includes/Vector3.hpp"
+#include "../includes/stb_image.h"
 
 class ParsingException : public std::exception {
  private:
@@ -16,8 +17,93 @@ class ParsingException : public std::exception {
     }
 };
 
+Mesh::Mesh() {
+    components = 0;
+}
+
 Mesh::Mesh(std::string str) {
     this->MeshParser(str);
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO);
+
+    this->InitTexture();
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(*meshVertexArray.data()) * meshVertexArray.size(), meshVertexArray.data(), GL_STATIC_DRAW);
+    int strideSize = 6;
+    if (components == 2)
+        strideSize = 9;
+    else if (components == 3)
+        strideSize = 11;
+    glVertexAttribPointer(
+        0,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        strideSize * sizeof(float),
+        reinterpret_cast<void*>(0));
+    glEnableVertexAttribArray(0);
+    if (components >= 2) {
+        glVertexAttribPointer(
+            1,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            strideSize * sizeof(float),
+            reinterpret_cast<void*>(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+    }
+    if (components == 3) {
+        glVertexAttribPointer(
+            2,
+            2,
+            GL_FLOAT,
+            GL_FALSE,
+            strideSize * sizeof(float),
+            reinterpret_cast<void*>(6 * sizeof(float)));
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(
+            3,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            strideSize * sizeof(float),
+            reinterpret_cast<void*>(8 * sizeof(float)));
+        glEnableVertexAttribArray(3);
+    } else {
+        glVertexAttribPointer(
+            3,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            strideSize * sizeof(float),
+            reinterpret_cast<void*>((strideSize - 3) * sizeof(float)));
+        glEnableVertexAttribArray(3);
+    }
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Mesh::InitTexture() {
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load("./textures/Triforce.png", &width, &height, &nrChannels, 0);
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    } else {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
 }
 
 Mesh::Mesh(const Mesh &mesh) {
@@ -32,7 +118,11 @@ Mesh::Mesh(const Mesh &mesh) {
     components = mesh.components;
 }
 
-Mesh::~Mesh() {}
+Mesh::~Mesh() {
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+}
 
 std::vector<GLfloat>    Mesh::GetVertices() {
     return vertices;
@@ -163,12 +253,6 @@ void Mesh::MeshGetFace(char *line, int lineNbr) {
             throw ParsingException("parsing error: faces numbers: " + std::to_string(lineNbr) + " " + tmpLine);
         components = tmpFaces.size();
     }
-
-    /*for (size_t i = 0; i < meshVertexArray.size(); i++) {
-        std::cout << meshVertexArray[i] << std::endl;
-        if ((i + 1) % 11 == 0)
-            std::cout << std::endl;
-    }*/
 }
 
 void Mesh::MeshParser(std::string fileName) {
@@ -209,4 +293,56 @@ void Mesh::MeshParser(std::string fileName) {
         glfwTerminate();
         exit(0);
     }
+}
+
+Mesh &Mesh::operator=(Mesh const &rhs) {
+    this->VAO = rhs.VAO;
+    std::cout << rhs.VAO << std::endl;
+    this->VBO = rhs.VBO;
+    this->EBO = rhs.EBO;
+    this->texture = rhs.texture;
+    this->vertices = rhs.vertices;
+    this->normalVertices = rhs.normalVertices;
+    this->textureVertices = rhs.textureVertices;
+    this->faces = rhs.faces;
+    this->verticesIndices = rhs.verticesIndices;
+    this->normalIndices = rhs.normalIndices;
+    this->textureIndices = rhs.textureIndices;
+    this->meshVertexArray = rhs.meshVertexArray;
+    this->components = rhs.components;
+    return *this;
+}
+
+GLuint Mesh::getVAO() {
+    return VAO;
+}
+
+GLuint Mesh::getVBO() {
+    return VBO;
+}
+
+GLuint Mesh::getEBO() {
+    return EBO;
+}
+
+GLuint Mesh::getTexture() {
+    return texture;
+}
+
+void Mesh::Print() {
+    std::cout << "Mesh:" << std::endl;
+    std::cout << vertices.size() << std::endl;
+    std::cout << VAO << std::endl;
+    std::cout << VBO << std::endl;
+    std::cout << EBO << std::endl;
+    std::cout << texture << std::endl;
+    std::cout << normalVertices.size() << std::endl;
+    std::cout << textureVertices.size() << std::endl;
+    std::cout << faces.size() << std::endl;
+    std::cout << verticesIndices.size() << std::endl;
+    std::cout << normalIndices.size() << std::endl;
+    std::cout << textureIndices.size() << std::endl;
+    std::cout << meshVertexArray.size() << std::endl;
+    std::cout << components << std::endl;
+    std::cout << "End Mesh:" << std::endl;
 }

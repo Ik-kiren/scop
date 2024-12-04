@@ -81,9 +81,9 @@ Matrix4 Perspective(float fov, float aspectRatio, float near, float far) {
 
 Matrix4 Orthographique(float left, float right, float bot, float top, float near, float far) {
     Matrix4 matrix = Matrix4(
-        Vector4(2 / (right - left), 0, 0, -((right + left) / (right - left))),
-        Vector4(0, 2 / (top - bot), 0, -((top + bot) / (top - bot))),
-        Vector4(0, 0, -2 / (far - near), -((far + near) / (far - near))),
-        Vector4(0, 0, 0, 1));
+        Vector4(2 / (right - left), 0, 0, 0),
+        Vector4(0, 2 / (top - bot), 0, 0),
+        Vector4(0, 0, -2 / (far - near), 0),
+        Vector4(-((right + left) / (right - left)), -((top + bot) / (top - bot)), -((far + near) / (far - near)), 1));
     return matrix;
 }

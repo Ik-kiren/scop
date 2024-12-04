@@ -28,6 +28,10 @@ Vector3::Vector3(const Vector3 &vec) {
 
 Vector3::~Vector3() {}
 
+Vector3 Vector3::Inverse() {
+    return Vector3(x * -1, y * -1, z * -1);
+}
+
 float &Vector3::operator[](int index) {
     if (index < 0 || index > 2) {
         std::string str = "Vector3: " + std::to_string(index) + " out of range";
@@ -78,6 +82,6 @@ std::ostream &operator<<(std::ostream &out, Vector3 &rhs) {
     for (int i = 0; i < 3; i++) {
         out << rhs[i] << ", ";
     }
-    out << ">" << std::endl;
+    out << ">";
     return out;
 }

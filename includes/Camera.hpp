@@ -1,8 +1,9 @@
 #pragma once
 #include <cmath>
-#include "./Scop.hpp"
 #include "./Vector3.hpp"
 #include "./Matrix4.hpp"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 class Camera {
  private:
@@ -23,6 +24,7 @@ class Camera {
     void setCameraVectors();
 
  public:
+    Camera();
     Camera(Vector3 cameraPos, Vector3 up);
     ~Camera();
 
@@ -30,7 +32,10 @@ class Camera {
     Vector3 GetDirection();
     Vector3 GetUp();
     Matrix4 GetViewMatrix();
+    Matrix4 GetViewMatrix(Vector3 lookatpos);
 
     void RegisterMouseInput(GLFWwindow *window);
     void RegisterKeyboardInput(GLFWwindow *window);
+
+    Camera &operator=(const Camera &rhs);
 };

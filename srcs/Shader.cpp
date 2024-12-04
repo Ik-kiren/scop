@@ -42,7 +42,6 @@ Shader::Shader(const std::string vertexPath, const std::string shaderPath) {
 
     GLuint vertex;
     GLuint fragment;
-
     vertex = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex, 1, &vShaderCode, NULL);
     glCompileShader(vertex);
@@ -58,7 +57,6 @@ Shader::Shader(const std::string vertexPath, const std::string shaderPath) {
     glAttachShader(programID, fragment);
     glLinkProgram(programID);
     checkProgramCompile(programID);
-
     glDeleteShader(vertex);
     glDeleteShader(fragment);
 }
@@ -91,6 +89,10 @@ void Shader::setFloatArray(const std::string name, size_t size, GLfloat *array) 
 
 void Shader::setBool(const std::string name, bool state) {
     glUniform1i(glGetUniformLocation(programID, name.c_str()), state);
+}
+
+void Shader::setVector4(const std::string name, Vector4 vec) {
+    glUniform4f(glGetUniformLocation(programID, name.c_str()), vec.x, vec.y, vec.z, vec.w);
 }
 
 void Shader::checkShaderCompile(GLuint shader, const std::string name) {
